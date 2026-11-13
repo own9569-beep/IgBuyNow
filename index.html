@@ -107,4 +107,4 @@ body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
  $('search').oninput=render;
  fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json()).then(async cfg=>{const url=cfg.supabaseUrl+'/rest/v1/listings?select=*&active=eq.true&order=created_at.desc';const r=await fetch(url,{headers:{apikey:cfg.supabaseAnonKey}});if(!r.ok)throw Error('Chargement impossible');return r.json()}).then(data=>{listings=(Array.isArray(data)?data:[]).map(a=>({...a,image:a.image_url}));render()}).catch(()=>{$('listingGrid').textContent='Les annonces sont temporairement indisponibles.'});
 })();
-</script><script type="module" src="./js/auth.js"></script></body></html>
+</script><script type="module" src="./js/auth.js"></script><script type="module" src="./js/support.js"></script></body></html>
