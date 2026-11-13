@@ -156,6 +156,7 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
   <div id="usersList"></div>
   <div class="userPager"><button type="button" class="secondary" id="usersPrev">← Précédent</button><small id="usersPage">Page 1</small><button type="button" class="secondary" id="usersNext">Suivant →</button></div>
  </div>
+ <div class="panel"><div class="panelHeading"><h2>Historique de modération</h2></div><p class="muted">Retrouvez les dernières restrictions, levées de blocage, bannissements et suppressions.</p><div id="userAudit">Chargement…</div></div>
 </section>
   <section class="view" id="view-notifications" hidden>
    <div class="viewHead"><div><h2>Centre de notifications</h2><p>Suivez les nouveaux favoris, les questions et les demandes.</p></div></div>
@@ -183,7 +184,7 @@ async function updateOverview(){
  const results=await Promise.all(tables);
  ['statListings','statOrders','statTickets','statLikes'].forEach((name,i)=>$(name).textContent=results[i].error?'—':String(results[i].count??0));
 }
-async function reloadAll(){await Promise.all([load(),loadTickets(),loadOrders(),loadLikes(),loadNotifications(),updateOverview(),loadUsers(userPage)])}
+async function reloadAll(){await Promise.all([load(),loadTickets(),loadOrders(),loadLikes(),loadNotifications(),updateOverview(),loadUsers(userPage),loadUserAudit()])}
 $('refreshData').onclick=reloadAll;
 
 let userPage=1;
@@ -240,6 +241,20 @@ function renderUsers(){
  $('usersPrev').disabled=userPage===1;
  $('usersNext').disabled=!userHasMore;
 }
+async function loadUserAudit(){
+ const box=$('userAudit');
+ const {data,error}=await db.from('account_action_log').select('action,target_email,note,created_at').order('created_at',{ascending:false}).limit(30);
+ box.replaceChildren();
+ if(error){box.textContent='Historique indisponible.';return}
+ if(!data?.length){box.append(makeNode('p','Aucune action de modération enregistrée.','emptyState'));return}
+ const labels={block_purchase:'Achats bloqués',unblock_purchase:'Achats autorisés',ban:'Compte banni',unban:'Compte débanni',delete:'Compte supprimé'};
+ for(const entry of data){
+  const row=makeNode('div',undefined,'item');
+  row.append(makeNode('strong',(labels[entry.action]||entry.action)+' · '+entry.target_email),makeNode('small',new Date(entry.created_at).toLocaleString('fr-FR')));
+  if(entry.note)row.append(makeNode('p',entry.note));
+  box.append(row);
+ }
+}
 async function loadUsers(page=1){
  $('userFeedback').textContent='Chargement des comptes…';
  try{
@@ -264,7 +279,7 @@ async function executeUserAction(u,action){
  try{
   const res=await manageUserApi({action,user_id:u.id,confirm:confirmation,reason});
   $('userFeedback').textContent=res.message||'Modification enregistrée.';
-  await loadUsers(userPage);
+  await loadUsers(userPage);await loadUserAudit();
   $('status').textContent=res.message||'Modification enregistrée.';
  }catch(e){$('userFeedback').textContent='Échec : '+(e.message||'Action impossible')}
 }
