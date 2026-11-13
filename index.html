@@ -1,205 +1,179 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IG Buy Now — Comptes gaming</title><meta name="description" content="IG by Now, marketplace gaming : découvrez nos annonces et offres."><style>
-:root{--bg:#edf2f8;--card:#ffffff;--ink:#16243a;--muted:#65748a;--blue:#153e78;--border:#dce4ee;--header:#102b50;--surface:#f4f7fb;--shadow:0 12px 38px rgba(18,43,76,.075)}
-body.dark{--bg:#0b1728;--card:#14243a;--ink:#f1f5fc;--muted:#a8b7cb;--blue:#8ab8f6;--border:#2b405c;--header:#081424;--surface:#1a2e49;--shadow:0 12px 38px rgba(0,0,0,.2)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.5;transition:background .2s,color .2s}
-header{background:var(--header);padding:20px max(18px,calc((100vw - 1050px)/2));border-bottom:1px solid #ffffff18;box-shadow:0 3px 14px #0c1b3214}
-.brand{font-size:20px;letter-spacing:.035em;font-weight:800;color:#fff}.bar{display:flex;align-items:center;gap:9px;margin:15px 0 13px}
-.btn,button{border:1px solid var(--border);border-radius:9px;padding:11px 15px;font-weight:650;font-size:14px;cursor:pointer;background:var(--surface);color:var(--ink);transition:background .2s,transform .15s,border-color .2s}
-button:active{transform:scale(.98)}header button{background:#ffffff12;color:#f6f9ff;border-color:#ffffff35}header button:hover{background:#ffffff22}
-.primary{background:#1c4e8b;color:white;border-color:#1c4e8b}.primary:hover{background:#173f72}body.dark .primary{background:#34659d;color:#fff;border-color:#34659d}
-.search,input,textarea,select{width:100%;padding:13px 15px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;outline:none}.search:focus,input:focus{border-color:#5683bc;box-shadow:0 0 0 3px #6293d226}
-main{max-width:1080px;margin:auto;padding:26px 18px 36px}.hero{background:linear-gradient(118deg,#102d52 5%,#1d4b80 65%,#2b5b91);border:1px solid #ffffff20;border-radius:16px;padding:36px 32px;color:#fff;margin-bottom:30px;box-shadow:var(--shadow)}
-.hero h1{margin:0 0 9px;font-size:clamp(26px,4vw,36px);letter-spacing:-.035em;font-weight:760}.hero p{line-height:1.6;color:#d6e4f5;margin:0 0 22px;max-width:510px}.hero button{background:#fff;color:#17375e;border-color:#fff;padding:12px 18px}
-main>h2{color:var(--ink);font-size:21px;font-weight:750;letter-spacing:-.02em;margin:0 0 17px}h2{font-size:22px}
-.listing[hidden]{display:none}.listing{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,42%) minmax(0,58%)}
-.photo{min-height:275px;background:#d5dfeb;display:flex;align-items:center;justify-content:center;position:relative;color:white;text-align:center}.photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}.photo .placeholder{font-size:26px;font-weight:800}.pill{position:absolute;left:14px;top:14px;background:#fff;color:#1d4578;border-radius:7px;padding:6px 11px;font-size:12px;font-weight:750;box-shadow:0 2px 10px #10263a30}
-.content{padding:26px;display:flex;flex-direction:column;justify-content:center}.content h3{font-size:21px;line-height:1.35;letter-spacing:-.025em;margin:0 0 10px}.desc{color:var(--muted);line-height:1.65;margin:0 0 20px}
-.bottom{display:flex;align-items:center;gap:15px;justify-content:space-between;flex-wrap:wrap;margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}.price{font-size:29px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}.status{color:#25865f;font-size:13px;font-weight:700}.actions{display:flex;gap:8px;flex-wrap:wrap}
-.modal{display:none;position:fixed;inset:0;background:#071426a8;z-index:20;overflow:auto;padding:18px}.modal.show{display:block}.panel{background:var(--card);max-width:550px;margin:8vh auto;border:1px solid var(--border);border-radius:15px;padding:24px;box-shadow:0 18px 60px #0004}.field{margin:12px 0}.field label{display:block;margin-bottom:6px;font-weight:700}.close{float:right}.hint{font-size:13px;color:var(--muted)}
-#chat{position:fixed;bottom:18px;right:18px;z-index:5;box-shadow:0 7px 25px #09294c33}#chatPanel{display:none;position:fixed;right:16px;bottom:78px;width:min(340px,calc(100vw - 32px));background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 12px 45px #0003;z-index:6}
-.notice{background:var(--surface);color:var(--muted);padding:13px 15px;border:1px solid var(--border);border-radius:10px;margin:15px 0;font-size:13px}a{color:var(--blue)}footer{text-align:center;color:var(--muted);padding:22px 15px 35px;font-size:13px}
-@media(max-width:680px){header{padding:17px 17px 19px}.brand{font-size:19px}.bar{margin:13px 0}.hero{padding:28px 22px;margin-bottom:26px}.hero h1{font-size:27px}.listing{display:block}.photo{height:215px;min-height:215px}.content{padding:20px}.content h3{font-size:20px}.bottom{gap:12px}.actions{width:100%}.actions button{flex:1}main{padding:20px 15px 26px}}
-
-/* Modern account dialog */
-.modal{background:rgba(5,15,34,.72);backdrop-filter:blur(7px);z-index:30}
-.modal .panel{position:relative;max-width:445px;margin:min(9vh,65px) auto;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:24px;box-shadow:0 28px 85px #020a1c65}
-.modal .close{position:absolute;top:16px;right:16px;float:none;z-index:2;width:36px;height:36px;padding:0;border-radius:50%;font-size:18px;background:var(--surface)}
-.auth-wrap{padding:34px 33px 28px;text-align:center}
-.auth-mark{display:grid;place-items:center;width:56px;height:56px;margin:0 auto 12px;border-radius:17px;background:linear-gradient(145deg,#183b73,#377bd4);color:white;font-size:20px;font-weight:850;box-shadow:0 10px 25px #285c9d40}
-.auth-eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted)}
-.auth-title{margin:12px 0 6px;font-size:25px;line-height:1.2;letter-spacing:-.04em}
-.auth-subtitle{margin:0 0 23px;color:var(--muted);font-size:13px;line-height:1.55}
-.auth-tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin:0 0 21px;gap:4px}
-.auth-tab{border:0;background:transparent;color:var(--muted);padding:11px 5px;border-radius:9px}
-.auth-tab.active{background:var(--card);color:var(--ink);box-shadow:0 2px 9px #0b23401a}
-.auth-form{text-align:left}
-.auth-field{display:block;margin:0 0 15px}
-.auth-field span{display:block;margin-bottom:7px;font-size:13px;font-weight:700}
-.auth-input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:11px;background:var(--surface);font-size:15px}
-.auth-help{text-align:right;margin:-5px 0 15px}
-.auth-link,.auth-back{border:0;background:transparent;color:var(--blue);padding:3px;font-size:12px;font-weight:700}
-.auth-submit{width:100%;border:0;border-radius:11px;background:#21549a;color:#fff;padding:14px;font-size:14px;font-weight:750;box-shadow:0 6px 16px #17478428}
-.auth-submit:hover{background:#1a467f}
-.auth-submit:disabled{opacity:.65;cursor:wait}
-.auth-divider{display:flex;align-items:center;gap:13px;margin:19px 0;color:var(--muted);font-size:12px}
-.auth-divider:before,.auth-divider:after{content:'';flex:1;height:1px;background:var(--border)}
-.auth-google{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--card);border:1px solid var(--border);padding:12px;border-radius:11px}
-.auth-google-icon{font-size:20px;font-weight:900;color:#4285f4}
-.auth-notice{padding:11px 12px;border-radius:10px;background:var(--surface);color:var(--ink);font-size:12px;line-height:1.5;text-align:left;margin:15px 0 0}
-.auth-notice.error{color:#b91c1c;background:#feecec}
-.auth-notice[hidden]{display:none}
-.auth-back{margin-top:15px}
-.auth-legal{font-size:11px;color:var(--muted);margin:20px 0 0}
-.auth-user{display:flex;align-items:center;gap:10px;overflow-wrap:anywhere;background:var(--surface);padding:15px;border-radius:12px;margin-bottom:18px;text-align:left}
-.auth-avatar{font-size:23px}
-@media(max-width:480px){.modal{padding:12px}.modal .panel{margin:6vh auto;border-radius:20px}.auth-wrap{padding:29px 22px 25px}.auth-title{font-size:23px}}
-
-/* Blue-first brand refinement */
-:root{--bg:#e8effa;--header:#071e43;--surface:#eaf2ff;--blue:#164d9b;--border:#c9d9f0}
-header{background:linear-gradient(125deg,#061a3a,#0e3e83 75%,#175bb0);border-bottom:3px solid #2b79d4}
-.hero{background:linear-gradient(115deg,#061d44,#0d448e 66%,#1768c6);box-shadow:0 16px 45px #0a37782d}
-.brand{letter-spacing:.08em}.primary,.auth-submit{background:#1055ae;border-color:#1055ae;color:white}
-.modal .panel{background:linear-gradient(180deg,#0a3474 0,#1056aa 165px,var(--card) 165px);border-color:#235eab}
-.auth-wrap>.auth-mark{background:#fff;color:#1352a3;box-shadow:0 7px 22px #041e4e50}
-.auth-eyebrow,.auth-title,.auth-subtitle{color:white}
-.auth-subtitle{color:#d6e7ff}
-.auth-tabs{background:#dceaff;border-color:#c3d7f4}.auth-tab.active{background:#1255aa;color:#fff}
-.auth-google{border:2px solid #bfd5f4;background:#f5f9ff;color:#113b75}
-.auth-field span{color:var(--ink)}
-body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
-
-/* Adaptive desktop and mobile storefront */
-html{min-width:320px;scroll-padding-top:20px}body{overflow-x:hidden}button,input,textarea,select{max-width:100%}
-header{padding-top:17px;padding-bottom:18px}.headerTop{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0}
-.brand{text-decoration:none;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:22px;letter-spacing:.035em}
-.brand span{color:#8ec5ff}.bar{margin:0;flex-wrap:wrap;justify-content:flex-end}
-.siteNav{display:flex;align-items:center;gap:8px;margin:17px 0 16px}
-.siteNav a{display:inline-flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;color:#e6f1ff;font-size:13px;font-weight:750;padding:9px 15px;border-radius:10px;border:1px solid #ffffff25;background:#ffffff12;min-height:42px}
-.siteNav a:hover{background:#ffffff25}.searchWrap{max-width:670px}.searchWrap label{display:block;color:#b9d5f5;font-size:12px;font-weight:700;margin-bottom:6px}
-.search{font-size:16px;min-height:48px}.hero{padding:42px 40px}.heroBadge{font-size:11px;font-weight:800;letter-spacing:.15em;color:#b7d9ff;margin-bottom:12px}
-.hero h1{max-width:670px;font-size:clamp(29px,4.2vw,44px);line-height:1.15}.hero p{max-width:610px}
-#listingGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px}
-.listing{display:flex;flex-direction:column;margin:0;min-width:0}.photo{min-height:245px;height:245px;flex-shrink:0}.content{padding:22px;flex:1;min-width:0}
-.content h3,.desc{overflow-wrap:anywhere}.content h3{font-size:20px}.desc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.bottom{align-items:flex-end}.actions button{min-height:43px}.notice{line-height:1.7}footer{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;border-top:1px solid var(--border);padding:28px 18px 38px}footer strong{color:var(--ink)}
-@media(min-width:1100px){#listingGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:680px){
- header{padding:13px 14px 17px}.headerTop{gap:8px}.brand{font-size:18px}.brand span{font-size:17px}.bar{gap:5px}.bar button{font-size:12px;padding:9px 10px;min-height:40px}
- .siteNav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:13px 0}.siteNav a{font-size:11px;padding:9px 3px;white-space:nowrap}
- .searchWrap label{font-size:11px}.search{width:100%;min-height:47px}
- main{padding:16px 13px 32px}.hero{padding:28px 22px;border-radius:15px;margin-bottom:23px}.hero h1{font-size:clamp(27px,7vw,34px);line-height:1.15}.hero p{font-size:14px}
- #listingGrid{grid-template-columns:minmax(0,1fr);gap:15px}.listing{border-radius:15px}.photo{height:205px;min-height:205px}.content{padding:18px}.content h3{font-size:19px}
- .bottom{display:grid;grid-template-columns:1fr;align-items:start;gap:12px}.actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}.actions button{width:100%;padding:11px 7px;font-size:12px}
- .price{font-size:25px}.modal{padding:9px}.modal .panel{width:100%;max-width:445px;margin:5vh auto}
- footer{display:flex;flex-direction:column;gap:6px;padding-bottom:95px}
-}
-@media(max-width:370px){.brand{font-size:16px}.brand span{font-size:15px}.bar button{font-size:11px;padding:8px}.siteNav a{font-size:10px}.hero{padding:23px 17px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
-#notifyCount{background:#e64255;color:white;border-radius:50px;padding:2px 5px;font-size:10px;margin-left:2px}
-#notifyPanel{position:absolute;z-index:18;right:max(14px,calc((100vw - 1080px)/2));top:68px;width:min(400px,calc(100vw - 28px));max-height:min(75vh,620px);overflow:auto;background:var(--card);color:var(--ink);padding:18px;border:1px solid var(--border);border-radius:14px;box-shadow:0 15px 45px #071a3660}
-#notifyPanel[hidden],#adminShortcut[hidden],#notifyCount[hidden]{display:none!important}
-#notifyPanel h3{margin:0 0 10px}.notificationItem{padding:12px 0;border-bottom:1px solid var(--border)}.notificationItem.unread{border-left:3px solid #2779d9;padding-left:10px}.notificationItem p{font-size:13px;margin:4px 0}.notificationItem small{display:block;color:var(--muted)}.notificationItem button{padding:6px 10px;margin-top:7px;font-size:12px}
-@media(max-width:680px){#notifyPanel{top:58px;right:8px}.actions{grid-template-columns:repeat(2,minmax(0,1fr))}.actions button{white-space:normal}}
-
-/* Compact storefront cards — square visuals, denser listings */
-#listingGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;align-items:stretch}
-.listing{display:flex;flex-direction:column;margin:0;min-width:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 22px #102e5b12;transition:transform .2s,box-shadow .2s}
-.listing:hover{transform:translateY(-3px);box-shadow:0 14px 30px #102e5b25}
-.listing .photo{width:100%;height:auto!important;min-height:0!important;aspect-ratio:1/1;flex:none;overflow:hidden;background:linear-gradient(140deg,#0d2d58,#286abb)}
-.listing .photo img{width:100%;height:100%;object-fit:cover}
-.listing .pill{font-size:10px;left:10px;top:10px;padding:5px 8px;max-width:68%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.listing .content{padding:14px;display:flex;flex-direction:column;justify-content:flex-start;min-height:0}
-.listing .content h3{font-size:15px;line-height:1.35;margin:0 0 7px;min-height:40px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.listing .desc{font-size:12px;line-height:1.45;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.listing .bottom{padding-top:10px;margin-top:auto;display:flex;flex-direction:column;gap:10px;align-items:stretch}
-.listing .price{font-size:21px;line-height:1.2}.listing .status{font-size:11px;margin-top:3px}
-.listing .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%}
-.listing .actions button{margin:0;min-height:35px;padding:8px 5px;font-size:11px;line-height:1.2;white-space:normal}
-.listing .actions .questionAction{grid-column:1/-1;background:transparent;border:1px solid var(--border);color:var(--blue)}
-.listing .favoriteIcon{position:absolute;z-index:2;top:9px;right:9px;width:35px;height:35px;display:grid;place-items:center;padding:0;border:1px solid #ffffffb8;background:#fffffff0;color:#cf3150;border-radius:50%;font-size:18px;box-shadow:0 3px 11px #0002}
-.listing .favoriteIcon:hover{background:white}.listing .favoriteIcon[aria-pressed="true"]{background:#ffe9ed}
-@media(max-width:1100px){#listingGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:680px){#listingGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.listing{border-radius:12px}.listing .content{padding:10px}.listing .content h3{font-size:13px;min-height:36px;margin-bottom:5px}.listing .desc{font-size:11px;margin-bottom:9px}.listing .bottom{gap:8px}.listing .price{font-size:17px}.listing .status{font-size:10px}.listing .actions{gap:5px}.listing .actions button{font-size:10px;min-height:33px;padding:7px 3px}.listing .pill{font-size:9px;padding:4px 7px}.listing .favoriteIcon{width:30px;height:30px;font-size:16px}.listing .photo{aspect-ratio:1/1}}
-@media(max-width:360px){#listingGrid{gap:8px}.listing .content{padding:8px}.listing .actions button{font-size:9px}}
-
-.deliveryPromise{display:flex;align-items:flex-start;gap:14px;padding:19px 20px;margin:16px 0 25px;background:linear-gradient(110deg,#e8f3ff,#f6faff);color:#164278;border:1px solid #bed9fa;border-radius:17px;box-shadow:0 6px 24px #164e9010}
-.deliveryPromise strong{display:block;font-size:18px;line-height:1.35}.deliveryPromise p{margin:7px 0 0;font-size:12px;line-height:1.6;color:#37648f}
-.deliveryMark{width:42px;height:42px;display:grid;place-items:center;background:#fff;border-radius:13px;font-size:21px;flex-shrink:0}
-.listing .status.onRequest{color:#1767be;font-weight:800}.listing .descriptionNotice{font-size:11px;color:#6686ad;margin:4px 0 0}
-@media(max-width:680px){.deliveryPromise{padding:14px;gap:10px;border-radius:12px}.deliveryPromise strong{font-size:15px}.deliveryPromise p{font-size:11px}.deliveryMark{width:34px;height:34px;font-size:17px}}
-.listingControls{display:flex;flex-direction:column;align-items:center;gap:10px;margin:20px 0 25px;font-size:12px;color:var(--muted)}
-#loadMoreListings{border:1px solid var(--border);background:var(--card);color:var(--ink);font-weight:800;padding:12px 25px;border-radius:11px}
-#loadMoreListings[hidden]{display:none}#loadMoreListings:hover{border-color:#3981dd}
-</style></head><body><header><div class="headerTop"><a class="brand" href="./" aria-label="IG Buy Now, accueil">IG <span>BUY NOW</span></a><div class="bar"><button id="theme" type="button">🌙 Nuit</button><button id="notifyBell" type="button" aria-label="Notifications">🔔 <span id="notifyCount" hidden></span></button><button id="adminShortcut" type="button" hidden>🛡 Admin</button><button id="account" type="button">👤 Compte</button></div></div><nav class="siteNav" aria-label="Navigation principale"><a href="#annonces">🎮 Annonces</a><a href="./checkout.html">🛒 Commander</a><a href="#supportInfo" id="navSupport">💬 Assistance</a></nav><div id="notifyPanel" hidden aria-label="Centre de notifications"></div><div class="searchWrap"><label for="search">Rechercher un compte gaming</label><input id="search" class="search" type="search" placeholder="🔎 Jeu, niveau, description…" autocomplete="off"></div></header><main><section class="hero"><div class="heroBadge">🎮 COMPTES GAMING</div><h1>Ton prochain compte gaming commence ici.</h1><p>Explore les annonces disponibles, consulte les détails et échange avec notre assistance avant de te décider.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><section class="deliveryPromise" aria-label="Service sur commande">
- <div class="deliveryMark">🛡️</div><div><strong>Livraison sous 48 h ou remboursement</strong>
- <p>Pour toute commande confirmée et réglée après vérification de la disponibilité. Nous contactons le fournisseur et coordonnons la livraison. Si la livraison ne peut pas être effectuée dans ce délai, remboursement du paiement reçu. Actuellement, le règlement en ligne n’est pas activé : les demandes sont sans paiement.</p></div>
- </section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div id="listingControls" class="listingControls"><button id="loadMoreListings" type="button" hidden>Afficher plus d’annonces</button><span id="listingResultInfo" aria-live="polite"></span></div><div class="notice" id="supportInfo"><strong>Besoin d’un conseil ?</strong> Notre assistance est disponible depuis le bouton en bas de l’écran. Les annonces sont publiées uniquement par IG Buy Now. Le paiement n’est pas encore activé.</div></main><footer><strong>IG BUY NOW</strong><span>Marketplace gaming · Paiements en préparation</span><a href="#annonces">Voir les annonces</a></footer><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0818">
+<meta name="description" content="IG Buy Now — Comptes Clash of Clans sur demande, offres personnalisées HDV 15 à 18 et accompagnement client.">
+<title>IG Buy Now — Clash of Clans sur demande</title>
+<style>
+:root{--bg:#090812;--bg2:#0e0b1e;--panel:#141127;--panel2:#1d1735;--line:#473064;--text:#fbf8ff;--muted:#b7abc9;--purple:#a33ff4;--purple2:#7326cd;--pink:#fa376c;--gold:#ffd16c;--shadow:0 16px 40px #06020d80;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px;min-width:320px}body{margin:0;min-width:320px;background:radial-gradient(ellipse at 10% -5%,#25103c 0%,transparent 28%),radial-gradient(ellipse at 85% 32%,#201139 0%,transparent 42%),var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;overflow-x:hidden}
+a{color:#bba2ff}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #b18aff;outline-offset:3px}
+[hidden]{display:none!important}
+.topbar{position:sticky;top:0;z-index:30;border-bottom:1px solid #442a61;background:#0b0919ef;backdrop-filter:blur(16px)}
+.topinner{max-width:1520px;margin:auto;padding:13px 28px;display:flex;align-items:center;gap:28px;min-width:0}
+.brand{flex:none;display:inline-flex;align-items:center;gap:11px;color:white;text-decoration:none;font-size:clamp(20px,2.1vw,27px);font-weight:900;letter-spacing:-.05em;white-space:nowrap}
+.brand em{font-style:normal;color:#ad52fd}.brandicon{display:grid;place-items:center;color:#c15dff;border:2px solid #9f40e7;border-radius:12px;height:37px;width:37px;box-shadow:0 0 20px #9736f955}
+.brandicon svg{height:23px;width:23px}.toplinks{display:flex;align-items:center;gap:4px;flex:none}
+.toplinks a,.catTrigger{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#e6def2;font-size:13px;font-weight:750;background:transparent;border:none;border-radius:12px;padding:11px 15px;white-space:nowrap}
+.toplinks a.selected{color:#fff;background:linear-gradient(130deg,#7935dc,#511d91);box-shadow:0 0 22px #843bec45}.toplinks a:hover,.catTrigger:hover{background:#34204c}
+.topSearch{margin-left:auto;display:flex;align-items:center;gap:9px;padding:0 13px;border:1px solid #453560;border-radius:50px;background:#201a34;max-width:360px;min-width:125px;flex:1}
+.topSearch svg{width:18px;height:18px;flex:none;color:#a59ab6}.topSearch input{border:0;color:#fff;outline:0;background:transparent;padding:12px 0;min-width:0;width:100%;font-size:13px}.topSearch input::placeholder{color:#a79ab9}
+.headActions{display:flex;align-items:center;gap:10px;flex:none}.iconButton{display:grid;place-items:center;background:#211a36;border:1px solid #453360;width:42px;height:42px;border-radius:50%;color:#fff;font-size:21px;position:relative}.iconButton:hover{background:#3a2259}
+.iconButton svg{width:20px;height:20px}.accountButton{background:#211a36;border:1px solid #473561;border-radius:22px;color:#fff;padding:10px 13px;font-size:12px;font-weight:750;max-width:160px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.accountButton:hover{background:#342350}
+#adminShortcut{background:#322049;border:1px solid #8155b6;color:#eac8ff;padding:9px 11px;border-radius:10px;font-size:12px;font-weight:800}
+#notifyCount{position:absolute;top:-6px;right:-4px;border-radius:999px;background:#e52c69;color:#fff;font-size:10px;min-width:18px;padding:1px 4px;line-height:16px}
+.menuWrap{position:relative}.catMenu{position:absolute;top:100%;left:0;min-width:230px;background:#171029;border:1px solid #644382;padding:9px;border-radius:14px;box-shadow:var(--shadow);z-index:50}.catMenu a{display:block;padding:12px;font-size:13px}
+#notifyPanel{position:fixed;top:70px;right:20px;z-index:75;width:min(400px,calc(100vw - 28px));max-height:70vh;overflow-y:auto;background:#1a142e;color:#fff;border:1px solid #654789;border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+#notifyPanel h3{margin:0 0 8px}.notificationItem{padding:10px 0;border-bottom:1px solid #403157}.notificationItem.unread{border-left:3px solid #b85aff;padding-left:11px}.notificationItem p{font-size:13px;color:#c4b6d7}.notificationItem small{color:#9b8aa9;display:block}.notificationItem button{margin-top:8px;border:1px solid #5e367e;border-radius:8px;background:#34204d;color:#fff;padding:7px 12px}
+main{max-width:1520px;margin:auto;padding:20px 24px 45px}
+.hero{min-height:252px;position:relative;border-radius:22px;overflow:hidden;display:grid;grid-template-columns:33% minmax(0,1fr) 125px;align-items:center;gap:10px;padding:30px 33px;border:1px solid #70369c;background:radial-gradient(ellipse at 20% 76%,#4f207f 0%,transparent 43%),radial-gradient(ellipse at 88% 50%,#4a1683 0%,transparent 33%),linear-gradient(110deg,#100f2b,#210f36 60%,#130c2b);box-shadow:inset 0 0 50px #773caf35,0 10px 30px #0006}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;background:repeating-linear-gradient(125deg,transparent 0 14px,#a24bfa0c 15px 16px);mask-image:linear-gradient(90deg,#000,transparent 80%)}
+.heroLogo{position:relative;z-index:1;color:#ffd483;text-align:center;font-family:Georgia,serif;letter-spacing:-.075em;font-size:clamp(32px,4.2vw,66px);font-weight:1000;line-height:.83;text-shadow:1px 3px 0 #6a3414,3px 6px 0 #38200f,0 0 28px #d8842a88;transform:rotate(-4deg)}
+.heroLogo small{font-family:Georgia,serif;display:block;font-size:.42em;color:#fff0b2;margin:7px 0;letter-spacing:-.02em}.heroLogo .shield{font-size:38px;display:inline-block;vertical-align:middle}
+.heroCopy{position:relative;z-index:1}.heroCopy .eyebrow{color:#c18af7;letter-spacing:.14em;font-size:11px;font-weight:900;margin:0 0 7px}.heroCopy h1{font-weight:900;line-height:1.13;letter-spacing:-.048em;font-size:clamp(27px,3.15vw,48px);margin:0 0 6px}.heroCopy h1 span{color:#d18bff}.heroCopy h2{font-size:clamp(17px,2.1vw,27px);color:#a956ed;font-weight:850;margin:0 0 18px}
+.heroFeatures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.heroFeature{display:flex;align-items:center;gap:8px;background:#130e23a6;border:1px solid #4a2c6b;border-radius:15px;padding:10px 9px;min-width:0}
+.heroFeature .emoji{flex:none;display:grid;place-items:center;font-size:21px;width:32px;height:32px;border-radius:50%;background:#3b215d}
+.heroFeature strong{display:block;font-size:11px;line-height:1.3;white-space:nowrap}.heroFeature small{display:block;color:#baadd0;font-size:10px;line-height:1.45;margin-top:2px}
+.heroClock{z-index:1;justify-self:center;width:102px;height:113px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:34%;font-weight:900;color:#fff;text-align:center;background:radial-gradient(circle,#752cc5,#2d0d56 75%);border:4px solid #b44bff;box-shadow:0 0 15px #b35bff,0 0 46px #9f33fa66,inset 0 0 20px #ec9cfd2b;font-size:30px;line-height:1}
+.heroClock small{font-size:13px;margin-top:7px;letter-spacing:.07em}.clockFace{font-size:14px;margin-bottom:6px;color:#f4c9ff}
+.sectionTitle{display:flex;align-items:baseline;gap:23px;flex-wrap:wrap;margin:21px 0 14px}.sectionTitle h2{font-size:clamp(23px,2.1vw,30px);letter-spacing:-.042em;line-height:1.2;margin:0;font-weight:900;display:flex;align-items:center;gap:16px}.sectionTitle h2:before{content:"";display:block;width:7px;height:31px;background:linear-gradient(#b65dff,#702ad5);border-radius:4px}.sectionTitle p{font-size:13px;color:#beb2d0;margin:0}
+.catalog{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.listing{min-width:0;position:relative;display:flex;flex-direction:column;background:linear-gradient(160deg,#1b142f,#100e1e 85%);border:1px solid #55386f;border-radius:19px;overflow:hidden;box-shadow:0 8px 30px #07030d54;transition:transform .18s,border-color .18s}
+.listing:hover{transform:translateY(-4px);border-color:#a85ff3}.listing .visual{height:170px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 90%,#8240db6a,transparent 58%),linear-gradient(125deg,#1c1234,#130c28)}
+.listing[data-th="16"] .visual{background:radial-gradient(ellipse at 50% 87%,#bb561d70,transparent 60%),linear-gradient(135deg,#26172a,#140b1b)}
+.listing[data-th="17"] .visual{background:radial-gradient(ellipse at 50% 87%,#6077b06d,transparent 59%),linear-gradient(135deg,#161e36,#111020)}
+.listing[data-th="18"] .visual{background:radial-gradient(ellipse at 50% 87%,#3d84c871,transparent 60%),linear-gradient(135deg,#17263d,#120e28)}
+.listing .visual img{display:block;width:min(64%,185px);height:155px;object-fit:contain;filter:drop-shadow(0 12px 12px #0008) drop-shadow(0 0 15px #b56aff36);transition:transform .3s}
+.listing:hover .visual img{transform:scale(1.06)}
+.listing .artFallback{font-size:90px;filter:drop-shadow(0 8px 18px #7c37d975)}
+.promoBadge{position:absolute;top:11px;left:10px;z-index:3;padding:6px 11px;border-radius:12px;background:linear-gradient(125deg,#ff456b,#c7164d);box-shadow:0 4px 16px #bd1e5d70;color:white;font-size:18px;font-weight:900;transform:rotate(-4deg)}
+.likeButton{position:absolute;top:11px;right:11px;z-index:5;width:34px;height:34px;background:#161022d9;border:1px solid #60417d;border-radius:50%;color:#f5e6ff;display:grid;place-items:center;padding:0;font-size:23px;line-height:1}.likeButton[aria-pressed="true"]{color:#fa548d;background:#421c39}
+.cardBody{padding:15px 14px 16px;flex:1;display:flex;flex-direction:column}.cardHeadline{font-size:22px;line-height:1.1;letter-spacing:-.03em;font-weight:900;margin:0}.cardHeadline span{color:#d5aaff}.cardType{align-self:flex-start;margin:7px 0 8px;background:linear-gradient(135deg,#6727be,#8d3cda);padding:3px 9px;border-radius:20px;color:#fff;font-size:10px;font-weight:800}
+.cardDesc{font-size:12px;line-height:1.55;color:#e3d7f4;margin:0 0 14px;flex:1;min-height:58px}.cardDesc strong{color:white}
+.cardFooter{margin-top:auto}.cardFooter button{width:100%;border:1px solid #9752d3;border-radius:12px;background:linear-gradient(180deg,#913de7,#6320b5);color:white;padding:12px 8px;font-size:13px;font-weight:850;box-shadow:0 8px 17px #6328b736}.cardFooter button:hover{background:linear-gradient(#ae53ff,#772bd0)}
+.cardInfo{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:10px;color:#a995bd;font-size:10px}
+.promotionGrid{display:grid;grid-template-columns:1fr;gap:14px}
+.promotionGrid .listing{display:grid;grid-template-columns:260px minmax(0,1fr);align-items:stretch;min-height:212px;background:radial-gradient(ellipse at 15% 50%,#52207369,transparent 44%),linear-gradient(120deg,#18102c,#100d20)}
+.promotionGrid .listing .visual{height:100%;min-height:210px;background:radial-gradient(ellipse at center,#8f2eda55,#261038 55%,#100c22);border-right:1px solid #442562}
+.promotionGrid .listing .artFallback{display:flex;align-items:center;justify-content:center;width:122px;height:136px;border:6px solid #f8ab48;background:radial-gradient(circle,#7e28da,#34105b);border-radius:35px 35px 50px 50px;box-shadow:0 0 25px #ac34ff90,0 12px 0 #4b1c6a;color:#fff;font-size:82px;font-weight:900;text-shadow:0 4px 1px #57208c}
+.promotionGrid .listing .cardBody{padding:18px 26px;justify-content:center}.promotionGrid .listing .cardHeadline{font-size:29px}.promotionGrid .listing .cardType{background:#4e1936;border:1px solid #a22560;color:#ff88a8;font-size:13px;padding:4px 12px}
+.promotionGrid .listing .cardDesc{font-size:13px;min-height:auto;flex:none;margin:7px 0 12px}
+.promotionGrid .listing .cardFooter button{max-width:420px}.promotionGrid .listing .cardInfo{margin:10px 0 0}
+.promiseNote{font-size:12px;color:#ad9cbe;line-height:1.6;text-align:center;margin:18px 0 8px}
+.catalogTools{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px;color:#9589a6;font-size:12px}.catalogTools button{background:#26173d;border:1px solid #583178;border-radius:12px;padding:10px 23px;color:white}
+.empty{grid-column:1/-1;padding:30px;text-align:center;border:1px dashed #70518f;border-radius:15px;color:#baafd0}
+footer{margin-top:25px;padding:28px 15px 90px;background:#090714;border-top:1px solid #422960;color:#a89ab9;text-align:center;font-size:12px}footer a{margin:0 10px;text-decoration:none}
+.modal{display:none;position:fixed;inset:0;z-index:90;padding:15px;background:#05020ccc;backdrop-filter:blur(9px);overflow:auto}.modal.show{display:block}
+.modal .panel{max-width:470px;margin:min(6vh,48px) auto;background:linear-gradient(180deg,#33115c,#1b122f 155px,#161026 155px);border:1px solid #8850ba;border-radius:23px;padding:30px;position:relative;box-shadow:0 25px 80px #0009}
+.modal .close{position:absolute;top:12px;right:12px;z-index:1;border:1px solid #744399;background:#2b1844;color:#fff;border-radius:50%;height:35px;width:35px}
+.auth-wrap{text-align:center}.auth-mark{display:grid;place-items:center;margin:0 auto 14px;width:50px;height:50px;border-radius:15px;background:#8138d5;color:white;font-size:20px;font-weight:900}.auth-eyebrow{font-size:10px;color:#b98ce5;letter-spacing:.13em;font-weight:900}
+.auth-title{font-size:26px;line-height:1.2;margin:10px 0;color:white}.auth-subtitle{font-size:13px;color:#ceb6e4;margin:5px 0 22px}
+.auth-tabs{display:flex;gap:5px;padding:5px;background:#2b1c41;border-radius:12px;margin-bottom:19px}.auth-tab{flex:1;border:0;border-radius:9px;background:transparent;color:#b6a5ca;padding:11px;font-size:12px}.auth-tab.active{background:#7230c2;color:white;font-weight:800}
+.auth-form{text-align:left}.auth-field{display:block;text-align:left;font-size:12px;font-weight:750;margin:0 0 13px}.auth-field span{display:block;margin-bottom:5px}
+.auth-input,.requestForm textarea{width:100%;border:1px solid #544073;border-radius:10px;background:#241735;color:#fff;padding:12px 13px;min-height:43px}.auth-help{text-align:right;margin:-3px 0 9px}
+.auth-link,.auth-back{border:0;background:transparent;color:#c996fc;font-size:12px}.auth-submit{width:100%;background:linear-gradient(110deg,#9141e7,#6627ba);border:0;border-radius:11px;padding:13px;color:white;font-weight:800;margin-top:8px}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#9e8baa;font-size:12px}.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#5c4174;flex:1}
+.auth-google{background:#241735;color:white;border:1px solid #8056b4;border-radius:11px;padding:13px;width:100%;font-weight:750;display:flex;gap:10px;justify-content:center;align-items:center}.auth-google-icon{font-weight:900;color:#8ab4ff;font-size:18px}
+.auth-notice{padding:11px 12px;border-radius:10px;background:#332046;color:#e1c9f7;font-size:12px;margin-top:12px;text-align:left}.auth-notice.error{background:#4c182a;color:#ffacbd}
+.auth-legal{font-size:11px;color:#a08cb1;margin-top:18px}.auth-user{display:flex;gap:10px;text-align:left;align-items:center;padding:12px;background:#2a1a3d;border-radius:10px;margin-top:12px;overflow-wrap:anywhere}.auth-avatar{font-size:22px}
+.requestForm h2{margin:0 0 8px}.requestForm p{color:#c4b0d8;font-size:13px;line-height:1.6}.requestForm label{display:block;margin:15px 0 7px;color:#d9c8ea;font-size:13px;font-weight:750}.requestForm textarea{min-height:138px;resize:vertical;font-size:16px}.requestForm button{width:100%;padding:12px;margin-top:13px;border:1px solid #a46bdf;border-radius:10px;background:linear-gradient(110deg,#8f3bdf,#5d1fa4);font-weight:850;color:#fff}.requestForm .muted{font-size:11px;color:#a694bc}
+@media(max-width:1220px){.topinner{gap:10px;padding:12px 15px}.toplinks a,.catTrigger{padding:10px}.heroFeatures{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:29% minmax(0,1fr) 100px}.heroClock{width:85px;height:95px;font-size:24px}}
+@media(max-width:900px){.topinner{flex-wrap:wrap}.toplinks{order:3;width:100%;justify-content:space-around}.toplinks a,.catTrigger{font-size:12px}.topSearch{max-width:none}.hero{grid-template-columns:1fr 2fr;gap:15px;min-height:230px}.heroClock{display:none}.heroLogo{font-size:clamp(30px,5vw,50px)}.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.topinner{padding:10px 12px;gap:8px}.brand{font-size:19px}.brandicon{height:31px;width:31px}.brandicon svg{height:20px;width:20px}.topSearch{order:2;flex-basis:100%;max-width:100%;min-width:0}.toplinks{order:3;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}.toplinks a,.catTrigger{font-size:11px;padding:8px 12px}.headActions{margin-left:auto;gap:6px}.accountButton{max-width:98px;font-size:11px}.iconButton{width:34px;height:34px}.iconButton svg{width:18px;height:18px}#adminShortcut{padding:7px;font-size:10px}main{padding:13px 10px 25px}.hero{display:block;min-height:0;padding:19px 16px;border-radius:16px}.heroLogo{display:none}.heroCopy h1{font-size:26px}.heroCopy h2{font-size:18px}.heroFeatures{gap:7px}.heroFeature{padding:8px 6px;gap:6px;border-radius:11px}.heroFeature .emoji{width:26px;height:26px;font-size:16px}.heroFeature strong{font-size:10px}.heroFeature small{font-size:9px}.sectionTitle{gap:6px;margin:20px 0 13px}.sectionTitle h2{font-size:22px}.sectionTitle h2:before{height:25px}.sectionTitle p{font-size:11px}.catalog{gap:9px}.listing{border-radius:13px}.listing .visual{height:120px}.listing .visual img{height:115px;width:75%}.promoBadge{padding:4px 7px;font-size:13px}.likeButton{width:26px;height:26px;right:6px;top:6px;font-size:18px}.cardBody{padding:11px 9px 12px}.cardHeadline{font-size:19px}.cardType{font-size:9px;padding:3px 7px}.cardDesc{font-size:10px;min-height:77px;line-height:1.45}.cardFooter button{font-size:11px;padding:9px 4px}.cardInfo{font-size:9px}.promotionGrid .listing{grid-template-columns:112px minmax(0,1fr);min-height:205px}.promotionGrid .listing .visual{min-height:205px}.promotionGrid .listing .artFallback{height:100px;width:91px;font-size:60px;border-width:4px}.promotionGrid .listing .cardBody{padding:13px 12px}.promotionGrid .listing .cardHeadline{font-size:21px}.promotionGrid .listing .cardType{font-size:11px}.promotionGrid .listing .cardDesc{font-size:11px}.modal .panel{padding:24px 18px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+<header class="topbar"><div class="topinner">
+<a class="brand" href="./"><span class="brandicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.2 12H5.2L4 7Z"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><path d="m9 14 3 3 3-3"/></svg></span><span>IG Buy <em>Now</em></span></a>
+<nav class="toplinks" aria-label="Navigation"><a class="selected" href="./">⌂ Accueil</a><a href="#annonces">◇ Annonces</a><div class="menuWrap"><button class="catTrigger" id="categoryToggle" type="button" aria-expanded="false">▦ Catégories ⌄</button><div class="catMenu" id="categoryMenu" hidden><a href="#annonces">Comptes sur demande</a><a href="#promotions">Offres &amp; Promotions</a></div></div><a href="#aide" id="navSupport">ⓘ Aide / FAQ</a></nav>
+<div class="topSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input id="search" type="search" placeholder="Rechercher un compte..." autocomplete="off" aria-label="Rechercher une annonce"></div>
+<div class="headActions"><button type="button" id="notifyBell" class="iconButton" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="notifyCount" hidden></span></button><button type="button" id="adminShortcut" hidden>🛡 Admin</button><button type="button" id="account" class="accountButton">◉ Mon compte</button></div>
+</div><div id="notifyPanel" hidden aria-label="Centre de notifications"></div></header>
+<main>
+<section class="hero" aria-label="Clash of Clans sur demande"><div class="heroLogo" aria-hidden="true">CLASH<small>of</small>CLANS <span class="shield">🛡️</span></div>
+<div class="heroCopy"><p class="eyebrow">COMPTES GAMING PERSONNALISÉS</p><h1>Comptes <span>Clash of Clans</span></h1><h2>Sur demande &amp; sur mesure</h2>
+<div class="heroFeatures"><div class="heroFeature"><span class="emoji">🛡️</span><div><strong>Compte vérifié</strong><small>Vérification avant livraison</small></div></div><div class="heroFeature"><span class="emoji">⚡</span><div><strong>Livraison rapide</strong><small>Sous 48 h après validation</small></div></div><div class="heroFeature"><span class="emoji">✓</span><div><strong>Remboursement</strong><small>Si non livré sous 48 h</small></div></div><div class="heroFeature"><span class="emoji">🎧</span><div><strong>Support actif</strong><small>Assistance disponible</small></div></div></div>
+</div><div class="heroClock"><div class="clockFace">◷</div>48 h<small>MAX</small></div></section>
+<section id="annonces"><div class="sectionTitle"><h2>Comptes sur demande</h2><p>Détaillez le compte recherché : héros, skins, niveau, équipements et autres critères.</p></div><div id="listingGrid" class="catalog" aria-live="polite"><p class="empty">Chargement des annonces…</p></div></section>
+<section id="promotions"><div class="sectionTitle"><h2>Offres &amp; Promotions</h2><p>Découvrez les offres spéciales sur les comptes Clash of Clans.</p></div><div id="promoGrid" class="promotionGrid" aria-live="polite"></div></section>
+<div class="catalogTools"><button id="loadMoreListings" hidden>Afficher plus d'annonces</button><span id="listingResultInfo"></span></div>
+<p class="promiseNote" id="aide">Les remises sont appliquées aux devis proposés. Disponibilité et prix définitif confirmés avant tout paiement. Le paiement en ligne est actuellement désactivé. La promesse 48 h / remboursement ne s'applique qu'aux commandes ultérieurement confirmées et réglées.</p>
+</main>
+<footer><strong>IG Buy Now</strong> · Comptes gaming sur demande · <a href="./mes-demandes.html">Mes demandes</a><a href="#annonces">Annonces</a><span>Site indépendant non affilié à Supercell.</span></footer>
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Espace client"><div class="panel"><button type="button" class="close" id="close" aria-label="Fermer">✕</button><div id="modalContent"></div></div></div>
+<script>
 (function(){
- const $=id=>document.getElementById(id);
- const modal=$('modal');
- let listings=[];const pageSize=24;let totalListings=0;let loading=false;let requestVersion=0;let searchTimer;
- function show(title,body){$('modalContent').replaceChildren();let h=document.createElement('h2'),p=document.createElement('p');h.textContent=title;p.textContent=body;$('modalContent').append(h,p);modal.classList.add('show')}
- $('close').onclick=()=>modal.classList.remove('show');
- modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
- $('theme').onclick=()=>{document.body.classList.toggle('dark');$('theme').textContent=document.body.classList.contains('dark')?'☀️ Jour':'🌙 Nuit';localStorage.setItem('ig-theme',document.body.classList.contains('dark')?'dark':'light')};
- if(localStorage.getItem('ig-theme')==='dark')$('theme').click();
-
- function render(){
-   const grid=$('listingGrid');grid.replaceChildren();
-   const q=$('search').value.trim().toLocaleLowerCase('fr');
-   const visible=listings.filter(a=>a.active!==false);
-   if(!visible.length){let p=document.createElement('p');p.className='notice';p.textContent=loading?'Chargement des annonces…':'Aucune annonce trouvée.';grid.append(p);return}
-   for(const a of visible){
-     const article=document.createElement('article');article.className='listing';
-     const photo=document.createElement('div');photo.className='photo';
-     const tag=document.createElement('span');tag.className='pill';tag.textContent=a.game||'Gaming';photo.append(tag);
-     if(a.image){const img=document.createElement('img');img.src=a.image;img.alt=a.title;img.loading='lazy';img.onerror=()=>{img.remove();const t=document.createElement('span');t.className='placeholder';t.textContent=a.game||'Gaming';photo.append(t)};photo.append(img)}
-     const content=document.createElement('div');content.className='content';
-     const h=document.createElement('h3');h.textContent=a.title;
-     const desc=document.createElement('p');desc.className='desc';desc.textContent=a.description;
-     const bottom=document.createElement('div');bottom.className='bottom';
-     const info=document.createElement('div'),price=document.createElement('div'),status=document.createElement('div');
-     price.className='price';price.textContent=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(a.price);
-     status.className='status';const onRequest=a.supply_mode==='on_request';status.textContent=a.sold?'● Vendu':onRequest?'● Sur commande · disponibilité à vérifier':'● Disponible';if(a.sold)status.style.color='var(--muted)';if(onRequest&&!a.sold)status.classList.add('onRequest');
-     info.append(price,status);
-     const actions=document.createElement('div');actions.className='actions';
-     const like=document.createElement('button');like.className='favoriteIcon';like.dataset.listingId=a.id;like.textContent='♡';like.title='Ajouter à mes favoris';like.setAttribute('aria-label','Ajouter aux favoris');like.setAttribute('aria-pressed','false');like.onclick=()=>window.igbnLike?.(a.id,like);photo.append(like);
-     const request=document.createElement('button');request.className='questionAction';request.textContent='✉ Poser une question';request.onclick=()=>window.igbnRequest?.(a.id);
-     const detail=document.createElement('button');detail.textContent='Détails';detail.onclick=()=>show(a.title,a.description+(onRequest?'\n\nOffre sur commande : disponibilité et prix final confirmés avant tout paiement. Livraison sous 48 h après validation et règlement, sinon remboursement.':''));
-     const buy=document.createElement('button');buy.className='primary';buy.textContent=a.sold?'Indisponible':onRequest?'Demander':'Acheter';buy.disabled=!!a.sold;buy.onclick=()=>{if(onRequest){window.igbnRequest?.(a.id)}else{location.href='./checkout.html?id='+encodeURIComponent(a.id)}};
-     actions.append(detail,buy,request);bottom.append(info,actions);content.append(h,desc,bottom);article.append(photo,content);grid.append(article);
-   }
-   document.dispatchEvent(new Event('igbn:listings-rendered'));
- }
- const navSupport=$('navSupport');if(navSupport)navSupport.onclick=e=>{e.preventDefault();document.getElementById('supportLaunch')?.click()};
- let authConfig=null;
- function refreshMore(){
-  const b=$('loadMoreListings');b.hidden=loading||!authConfig||listings.length>=totalListings;
-  $('listingResultInfo').textContent=totalListings?listings.length+' sur '+totalListings+' annonces affichées':'';
- }
- async function loadListings(reset=false){
-  if(!authConfig)return;
-  if(loading&&!reset)return;
-  const stamp=++requestVersion;
-  if(reset){listings=[];totalListings=0;render()}
-  loading=true;refreshMore();
-  try{
-   const from=listings.length,to=from+pageSize-1;
-   const url=new URL(authConfig.supabaseUrl+'/rest/v1/listings');
-   url.searchParams.set('select','*');url.searchParams.set('active','eq.true');url.searchParams.set('order','created_at.desc');
-   const query=$('search').value.trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);
-   if(query)url.searchParams.set('or','(title.ilike.*'+query+'*,description.ilike.*'+query+'*,game.ilike.*'+query+'*)');
-   const response=await fetch(url.toString(),{headers:{apikey:authConfig.supabaseAnonKey,Range:from+'-'+to,Prefer:'count=exact'}});
-   if(!response.ok)throw new Error('Impossible de charger le catalogue');
-   const rows=await response.json();
-   if(stamp!==requestVersion)return;
-   totalListings=Number(response.headers.get('content-range')?.split('/')[1])||0;
-   listings.push(...rows.map(a=>({...a,image:a.image_url})));
-  }catch(e){if(stamp===requestVersion){$('listingResultInfo').textContent='Erreur de chargement. Réessayez.'}}
-  finally{if(stamp===requestVersion){loading=false;render();refreshMore()}}
- }
- $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadListings(true),240)};
- $('loadMoreListings').onclick=()=>loadListings(false);
- fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json()).then(cfg=>{authConfig=cfg;loadListings(true)}).catch(()=>{$('listingGrid').textContent='Les annonces sont temporairement indisponibles.'});
+const $=id=>document.getElementById(id),modal=$('modal');
+let listings=[],totalListings=0,pageSize=24,loading=false,requestVersion=0,searchTimer,authConfig=null;
+function txt(tag,str,klass){const el=document.createElement(tag);if(str!==undefined)el.textContent=str;if(klass)el.className=klass;return el}
+function showDetails(a){
+ const box=$('modalContent');box.replaceChildren();
+ const wrapper=txt('div',undefined,'requestForm');wrapper.append(txt('h2',a.title),txt('p',a.description));
+ const extra=a.offer_type==='random'?'Répartition annoncée : HDV 15 (75 %), HDV 16 (15 %), HDV 17 (7 %), HDV 18 (3 %). Répartition à confirmer avant toute commande.':'';
+ if(extra)wrapper.append(txt('p',extra));
+ wrapper.append(txt('p','Réduction de −'+a.discount_percent+' % sur le devis confirmé. Aucun paiement n’est demandé à cette étape.'));
+ const btn=txt('button','Décrire mon compte');btn.onclick=()=>{modal.classList.remove('show');window.igbnRequest?.(a.id)};wrapper.append(btn);box.append(wrapper);modal.classList.add('show');
+}
+$('close').onclick=()=>modal.classList.remove('show');
+modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('show')});
+$('categoryToggle').onclick=()=>{const p=$('categoryMenu');p.hidden=!p.hidden;$('categoryToggle').setAttribute('aria-expanded',String(!p.hidden))};
+for(const a of $('categoryMenu').querySelectorAll('a'))a.onclick=()=>{$('categoryMenu').hidden=true};
+$('navSupport').onclick=e=>{e.preventDefault();$('supportLaunch')?.click()};
+function makeCard(a){
+ const random=a.offer_type==='random',th=a.town_hall_level;
+ const card=txt('article',undefined,'listing');if(th)card.dataset.th=String(th);
+ const visual=txt('div',undefined,'visual');
+ visual.append(txt('span','−'+(a.discount_percent||0)+' %','promoBadge'));
+ if(!random&&a.image_url){
+  const image=document.createElement('img');image.loading='lazy';image.referrerPolicy='no-referrer';image.src=a.image_url;image.alt='Hôtel de ville '+(th||'')+' de Clash of Clans';
+  image.onerror=()=>{image.remove();visual.append(txt('div','🏰','artFallback'))};visual.append(image);
+ }else if(random){visual.append(txt('div','?','artFallback'))}
+ else visual.append(txt('div','🏰','artFallback'));
+ const fav=txt('button','♡','likeButton favoriteIcon');fav.type='button';fav.dataset.listingId=a.id;fav.title='Ajouter aux favoris';fav.setAttribute('aria-label','Ajouter aux favoris');fav.setAttribute('aria-pressed','false');fav.onclick=()=>window.igbnLike?.(a.id,fav);visual.append(fav);
+ const body=txt('div',undefined,'cardBody');
+ const title=txt('h3',undefined,'cardHeadline');
+ if(random){title.textContent='HDV Aléatoire'}else{title.append(txt('span','HDV '),txt('span',String(th||'')))}
+ const type=txt('span',random?'Prix réduit −15 %':'Compte sur demande','cardType');
+ const desc=txt('p',random?'Compte aléatoire parmi les HDV 15, 16, 17 ou 18. L’attribution et le devis seront confirmés avant paiement.':'Détaillez votre produit et votre demande dans la description.','cardDesc');
+ const footer=txt('div',undefined,'cardFooter');
+ const button=txt('button',random?'Demander ce compte':'▣ Faire une demande');button.type='button';button.onclick=()=>window.igbnRequest?.(a.id);footer.append(button);
+ const extra=txt('div',undefined,'cardInfo');const detail=txt('button','Voir les détails');detail.type='button';detail.style.cssText='background:transparent;color:#bda1dc;border:0;padding:2px;font-size:10px';detail.onclick=()=>showDetails(a);extra.append(txt('span','Sans prix affiché · sur devis'),detail);
+ body.append(title,type,desc,footer,extra);card.append(visual,body);return card;
+}
+function render(){
+ $('listingGrid').replaceChildren();$('promoGrid').replaceChildren();
+ let custom=0,random=0;
+ for(const a of listings){if(a.active===false)continue;if(a.offer_type==='random'){$('promoGrid').append(makeCard(a));random++}else{$('listingGrid').append(makeCard(a));custom++}}
+ if(!custom)$('listingGrid').append(txt('p',loading?'Chargement des annonces…':'Aucun compte ne correspond à votre recherche.','empty'));
+ if(!random)$('promoGrid').append(txt('p',loading?'Chargement…':'Aucune promotion trouvée.','empty'));
+ document.dispatchEvent(new Event('igbn:listings-rendered'));
+}
+function controls(){const b=$('loadMoreListings');b.hidden=loading||!authConfig||listings.length>=totalListings;$('listingResultInfo').textContent=totalListings?listings.length+' / '+totalListings+' annonces':''}
+async function load(reset=false){
+ if(!authConfig)return;if(loading&&!reset)return;
+ const version=++requestVersion;
+ if(reset){listings=[];totalListings=0;render()}
+ loading=true;controls();
+ try{
+  const from=listings.length,to=from+pageSize-1;
+  const u=new URL(authConfig.supabaseUrl+'/rest/v1/listings');
+  u.searchParams.set('select','*');u.searchParams.set('active','eq.true');u.searchParams.set('order','created_at.asc');
+  const query=$('search').value.trim().replace(/[,%()"'\\]/g,' ').replace(/\s+/g,' ').slice(0,80);
+  if(query)u.searchParams.set('or','(title.ilike.*'+query+'*,description.ilike.*'+query+'*,game.ilike.*'+query+'*)');
+  const r=await fetch(u.toString(),{headers:{apikey:authConfig.supabaseAnonKey,Range:from+'-'+to,Prefer:'count=exact'}});
+  if(!r.ok)throw Error('Le catalogue ne répond pas.');
+  const rows=await r.json();if(version!==requestVersion)return;
+  totalListings=Number(r.headers.get('content-range')?.split('/')[1])||0;listings.push(...rows);
+ }catch(e){if(version===requestVersion)$('listingResultInfo').textContent='Chargement impossible. Réessayez.'}
+ finally{if(version===requestVersion){loading=false;render();controls()}}
+}
+$('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>load(true),220)};
+$('loadMoreListings').onclick=()=>load(false);
+fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json()).then(c=>{authConfig=c;load(true)}).catch(()=>{$('listingGrid').textContent='Le catalogue est temporairement indisponible.'});
 })();
-</script><script type="module" src="./js/auth.js"></script><script type="module" src="./js/support.js"></script><script type="module" src="./js/notifications.js"></script></body></html>
+</script>
+<script type="module" src="./js/auth.js"></script>
+<script type="module" src="./js/support.js"></script>
+<script type="module" src="./js/notifications.js"></script>
+</body></html>
