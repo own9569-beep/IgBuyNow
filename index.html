@@ -110,6 +110,13 @@ function txt(tag,str,klass){const el=document.createElement(tag);if(str!==undefi
 function showDetails(a){
  const box=$('modalContent');box.replaceChildren();
  const wrapper=txt('div',undefined,'requestForm');wrapper.append(txt('h2',a.title),txt('p',a.description));
+ const photos=[...new Set([a.image_url,...(a.image_urls||[])].filter(Boolean))];
+ if(photos.length){
+  const gallery=txt('div');gallery.style.cssText='display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory';
+  for(const url of photos){const img=document.createElement('img');img.src=url;img.alt=a.title;img.loading='lazy';img.style.cssText='width:100%;max-height:420px;object-fit:contain;flex:0 0 100%;scroll-snap-align:start';gallery.append(img)}
+  wrapper.append(gallery);
+  if(photos.length>1)wrapper.append(txt('p',photos.length+' photos · Faites défiler pour toutes les voir.'));
+ }
  const extra=a.offer_type==='random'?'Répartition annoncée : HDV 15 (75 %), HDV 16 (15 %), HDV 17 (7 %), HDV 18 (3 %). Répartition à confirmer avant toute commande.':'';
  if(extra)wrapper.append(txt('p',extra));
  wrapper.append(txt('p',priceLabel(a)));
@@ -127,8 +134,9 @@ function makeCard(a){
  const card=txt('article',undefined,'listing');if(th)card.dataset.th=String(th);
  const visual=txt('div',undefined,'visual');
  if(discountLabel(a))visual.append(txt('span',discountLabel(a),'promoBadge'));
- if(a.image_url){
-  const image=document.createElement('img');image.loading='lazy';image.referrerPolicy='no-referrer';image.src=a.image_url;image.alt='Hôtel de ville '+(th||'')+' de Clash of Clans';
+ const cover=a.image_url||a.image_urls?.[0];
+ if(cover){
+  const image=document.createElement('img');image.loading='lazy';image.referrerPolicy='no-referrer';image.src=cover;image.alt='Hôtel de ville '+(th||'')+' de Clash of Clans';
   image.onerror=()=>{image.remove();visual.append(txt('div','🏰','artFallback'))};visual.append(image);
  }else if(random){visual.append(txt('div','?','artFallback'))}
  else visual.append(txt('div','🏰','artFallback'));

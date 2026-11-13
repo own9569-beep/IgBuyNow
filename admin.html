@@ -161,9 +161,12 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
      <form id="listingForm"><div class="grid">
       <label>Jeu<input name="game" required placeholder="Clash of Clans"></label>
       <label>Titre<input name="title" required placeholder="HDV 18 presque max"></label>
-      <label>Affichage du prix<select name="price_mode"><option value="quote">Sans prix / sur devis</option><option value="fixed">Afficher un prix</option></select></label>
+      <label>Affichage du prix<select name="price_mode"><option value="quote">Sans prix / sur devis</option><option value="fixed">Afficher un prix</option><option value="range">Fourchette de prix</option></select></label>
       <label id="priceField" hidden>Prix (€)<input name="price" type="number" min="0" step=".01" disabled></label>
-      <label>Image (URL ou fichier)<input name="image_url" placeholder="Hdv18.jpg"></label>
+      <label id="rangeField" hidden>Fourchette (€)<input name="price_min" type="number" min="0" step=".01" placeholder="Minimum" disabled><input name="price_max" type="number" min="0" step=".01" placeholder="Maximum" disabled></label>
+      <label>Importer des photos ou captures<input id="photoFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple><span id="photoStatus" role="status"></span></label>
+      <div id="photoPreview" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      <label>Image principale (URL)<input name="image_url" placeholder="Hdv18.jpg"></label>
       <label>Mode de vente<select name="supply_mode"><option value="stock">En stock</option><option value="on_request">Sur commande (disponibilité à confirmer)</option></select></label>
       <label>Type d'annonce<select name="offer_type"><option value="standard">Annonce standard</option><option value="custom">Compte HDV sur demande</option><option value="random">HDV aléatoire promotionnel</option></select></label>
       <label>Réduction en %<input name="discount_percent" type="number" min="0" max="90" step="1" value="0"></label>
@@ -390,14 +393,46 @@ async function loadLikes(){
 }
 async function loadTickets(){const {data,error}=await db.from('support_tickets').select('id,subject,message,status,admin_reply,created_at').order('created_at',{ascending:false}).limit(100);const box=$('ticketsList');box.replaceChildren();if(error){box.textContent=error.message;return}const pending=data.filter(t=>t.status!=='closed').length;$('ticketCount').textContent=pending?'('+pending+' à traiter)':'';if(!data.length){box.textContent='Aucune demande pour le moment.';return}for(const t of data){const row=document.createElement('div');row.className='item';const title=document.createElement('strong');title.textContent=t.subject+' — '+(t.status==='closed'?'Traité':'À traiter');const date=document.createElement('small');date.textContent=new Date(t.created_at).toLocaleString('fr-FR');const msg=document.createElement('p');msg.textContent=t.message;const answer=document.createElement('textarea');answer.rows=2;answer.placeholder='Réponse à conserver (non envoyée automatiquement par e-mail)';answer.value=t.admin_reply||'';const save=document.createElement('button');save.textContent='Enregistrer la réponse';save.onclick=async()=>{const {error}=await db.from('support_tickets').update({admin_reply:answer.value,status:'in_progress',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Réponse enregistrée (pas encore envoyée au client)';if(!error)await loadTickets()};const close=document.createElement('button');close.className='secondary';close.textContent='Marquer traité';close.onclick=async()=>{const {error}=await db.from('support_tickets').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Demande clôturée';if(!error)await loadTickets()};row.append(title,date,msg,answer,save,close);box.append(row)}}
 let editId=null;
+let gallery=[];
+let uploading=false;
+function renderPhotos(){
+ $('photoPreview').replaceChildren();
+ gallery.forEach((url,index)=>{
+  const box=document.createElement('div'),image=document.createElement('img'),remove=document.createElement('button');
+  image.src=url;image.alt='Photo '+(index+1);image.style.cssText='width:100px;height:80px;object-fit:contain';
+  remove.type='button';remove.textContent='Retirer';
+  remove.onclick=()=>{gallery.splice(index,1);renderPhotos()};
+  box.append(image,remove);$('photoPreview').append(box);
+ });
+}
+$('photoFiles').onchange=async e=>{
+ const files=[...e.target.files];uploading=true;
+ const buttons=[...$('listingForm').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);
+ try{
+  for(const file of files){
+   const path=crypto.randomUUID();
+   const {error}=await db.storage.from('listing-photos').upload(path,file,{contentType:file.type});
+   if(error)throw error;
+   gallery.push(db.storage.from('listing-photos').getPublicUrl(path).data.publicUrl);
+   renderPhotos();
+  }
+  $('photoStatus').textContent=gallery.length+' photo(s) ajoutée(s). Enregistrez l’annonce.';
+ }catch(error){$('photoStatus').textContent='Import interrompu : '+error.message+' Les photos déjà ajoutées sont conservées.'}
+ finally{uploading=false;e.target.value='';buttons.forEach(b=>b.disabled=false)}
+};
+
 function syncPriceField(){
  const form=$('listingForm'), fixed=form.elements.price_mode.value==='fixed';
  $('priceField').hidden=!fixed;
  form.elements.price.disabled=!fixed;
  form.elements.price.required=fixed;
+ const range=form.elements.price_mode.value==='range';
+ $('rangeField').hidden=!range;
+ for(const name of ['price_min','price_max']){form.elements[name].disabled=!range;form.elements[name].required=range;}
+
 }
 $('listingForm').elements.price_mode.onchange=syncPriceField;
-function clear(){editId=null;$('listingForm').reset();syncPriceField();$('formTitle').textContent='Nouvelle annonce'}
+function clear(){editId=null;gallery=[];renderPhotos();$('photoStatus').textContent='';$('listingForm').reset();syncPriceField();$('formTitle').textContent='Nouvelle annonce'}
 $('reset').onclick=clear;
 async function load(){
  const {data,error}=await db.from('listings').select('*').order('created_at',{ascending:false});
@@ -407,14 +442,16 @@ async function load(){
   const row=document.createElement('div');row.className='item';
   const title=document.createElement('strong');title.textContent=item.title+' — '+priceLabel(item)+(item.discount_percent>0?' · −'+item.discount_percent+' %':'');
   const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'Publiée · visible aux invités':'Brouillon masqué')+(item.supply_mode==='on_request'?' · Sur commande':'');
-  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','offer_type','discount_percent','town_hall_level','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':key==='offer_type'?'standard':key==='discount_percent'?0:'');form.elements.price_mode.value=hasPrice(item)?'fixed':'quote';syncPriceField();form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
+  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{if(uploading)return;editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','offer_type','discount_percent','town_hall_level','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':key==='offer_type'?'standard':key==='discount_percent'?0:'');gallery=[...(item.image_urls||[])];renderPhotos();form.elements.price_min.value=item.price_min??0;form.elements.price_max.value=item.price_max??'';form.elements.price_mode.value=item.price_max!=null?'range':hasPrice(item)?'fixed':'quote';syncPriceField();form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
   const publish=document.createElement('button');publish.textContent=item.active?'🟢 Publiée aux invités · Masquer':'🌍 Publier pour tous';publish.className='secondary';publish.type='button';publish.onclick=async()=>{const {error}=await db.from('listings').update({active:!item.active}).eq('id',item.id);$('status').textContent=error?error.message:(item.active?'Annonce masquée aux visiteurs.':'Annonce publiée pour les visiteurs, y compris les invités.');if(!error){await load();await updateOverview()}};
   const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
   row.append(title,sub,publish,edit,del);$('items').append(row)
  }
 }
 $('listingForm').onsubmit=async e=>{
- e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:form.elements.price_mode.value==='quote'?null:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,offer_type:form.elements.offer_type.value,discount_percent:Number(form.elements.discount_percent.value)||0,town_hall_level:form.elements.town_hall_level.value?Number(form.elements.town_hall_level.value):null,active:form.elements.active.checked,sold:form.elements.sold.checked};
+ e.preventDefault();if(uploading)return;const form=e.currentTarget;
+ if(form.elements.price_mode.value==='range'&&Number(form.elements.price_max.value)<Number(form.elements.price_min.value)){$('status').textContent='Le maximum doit être supérieur ou égal au minimum.';return}
+ const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:form.elements.price_mode.value==='fixed'?Number(form.elements.price.value):null,price_min:form.elements.price_mode.value==='range'?Number(form.elements.price_min.value):null,price_max:form.elements.price_mode.value==='range'?Number(form.elements.price_max.value):null,image_urls:gallery,image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,offer_type:form.elements.offer_type.value,discount_percent:Number(form.elements.discount_percent.value)||0,town_hall_level:form.elements.town_hall_level.value?Number(form.elements.town_hall_level.value):null,active:form.elements.active.checked,sold:form.elements.sold.checked};
  const q=editId?db.from('listings').update(value).eq('id',editId):db.from('listings').insert(value);
  const {error}=await q;$('status').textContent=error?error.message:'Annonce enregistrée';if(!error){clear();await load()}
 };
@@ -470,7 +507,7 @@ function parseSupplierCatalog(text){
   parsed.push({
    supplier_reference:ref,game:val('game')||'Clash of Clans',title,
    description:(val('description')||'Compte proposé sur commande. Disponibilité à confirmer avant paiement.').slice(0,1000),
-   price,source_url:link||null,image_url:image||null,
+   price,price_min:null,price_max:null,source_url:link||null,image_url:image||null,
    supply_mode:'on_request',active:true,sold:false
   });
  }
