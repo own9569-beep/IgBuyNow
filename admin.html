@@ -19,7 +19,7 @@
 .workspace{padding:28px clamp(16px,3vw,40px) 55px;max-width:1480px;width:100%;min-width:0;margin:0 auto}
 .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:24px}
 .eyebrow{font-size:11px;letter-spacing:.14em;color:var(--blue);font-weight:850;text-transform:uppercase;margin:0 0 7px}
-h1{margin:0;font-size:clamp(23px,3vw,31px);letter-spacing:-.04em;line-height:1.2}h2{font-size:18px;letter-spacing:-.02em;margin:0}h3{font-size:14px;margin:0}.subtitle{color:var(--muted);font-size:13px;margin:9px 0 0}
+h1{margin:0;font-size:clamp(23px,3vw,31px);letter-spacing:-.04em;line-height:1.2}h2{font-size:18px;letter-spacing:-.02em;margin:0}h3{font-size:14px;margin:0}.subtitle{color:var(--muted);font-size:13px;margin:9px 0 0;overflow-wrap:anywhere}.topbar>div:first-child{min-width:0}
 .topActions{display:flex;align-items:center;gap:9px;flex-shrink:0}
 #adminBell{background:white;border:1px solid var(--stroke);color:var(--ink);padding:11px 13px;border-radius:12px;box-shadow:var(--shadow);font-size:13px}
 #adminUnread{display:inline-flex;align-items:center;justify-content:center;min-width:20px;background:#ee4962;color:white;font-size:10px;padding:2px 5px;border-radius:20px}
@@ -160,7 +160,7 @@ if(!user){$('gateMessage').textContent='Connecte-toi d’abord depuis la boutiqu
 else{
  const {data:admin,error}=await db.from('admin_members').select('user_id').eq('user_id',user.id).maybeSingle();
  if(error||!admin){$('gateMessage').textContent='Accès réservé à l’administrateur.'}
- else{$('gate').hidden=true;$('dashboard').hidden=false;$('adminIdentity').textContent='Connecté en tant qu’administrateur · '+user.email;$('status').textContent='Votre espace de gestion est prêt.';$('adminBell').hidden=false;showView(location.hash.slice(1)||'overview');await reloadAll();setInterval(()=>{loadNotifications();loadOrders();loadTickets();loadLikes();updateOverview()},30000)}
+ else{$('gate').hidden=true;$('dashboard').hidden=false;$('adminIdentity').textContent='Connecté en tant qu’administrateur · '+user.email;$('status').textContent='Votre espace de gestion est prêt.';$('adminBell').hidden=false;showView(location.hash.slice(1)||'overview');await reloadAll();setInterval(()=>{loadNotifications();updateOverview()},30000)}
 }
 async function loadNotifications(){
  const {data,error}=await db.from('site_notifications').select('id,title,body,is_read,created_at').order('created_at',{ascending:false}).limit(30);
