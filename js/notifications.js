@@ -45,6 +45,7 @@ async function syncFavoriteIcons(){
  for(const b of buttons){const liked=ids.has(b.dataset.listingId);b.textContent=liked?'♥':'♡';b.setAttribute('aria-pressed',String(liked));b.title=liked?'Retirer des favoris':'Ajouter aux favoris';b.setAttribute('aria-label',b.title)}
 }
 document.addEventListener('igbn:listings-rendered',syncFavoriteIcons);
+syncFavoriteIcons();
 window.igbnLike=async (listingId,button)=>{
  const {data:{user}}=await db.auth.getUser();if(!user){document.getElementById('account')?.click();return}
  const {data:existing}=await db.from('listing_likes').select('listing_id').eq('listing_id',listingId).eq('user_id',user.id).maybeSingle();
