@@ -84,6 +84,38 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
 .importCheck{display:flex;align-items:flex-start;gap:8px;line-height:1.6;margin:15px 0}.importCheck input{flex:none;margin-top:2px}
 .importButtons{display:flex;flex-wrap:wrap;gap:8px}.importButtons button:disabled{opacity:.5;cursor:not-allowed}
 .previewTable{overflow-x:auto;max-height:230px;overflow-y:auto;font-size:12px}.previewTable table{border-collapse:collapse;width:100%;min-width:480px}.previewTable td,.previewTable th{text-align:left;padding:8px;border-bottom:1px solid #e5ebf4}.previewTable th{color:#5b7799;background:#f7f9fd}
+
+/* IG Buy Now — identité violet néon harmonisée avec la boutique */
+:root{--bg:#0b0818;--ink:#f8f1ff;--muted:#b9abc9;--stroke:#4d3468;--nav:#100b20;--blue:#c17cff;--shadow:0 11px 30px #05010d6e;color:#f8f1ff;background:#0b0818;color-scheme:dark}
+body{background:radial-gradient(ellipse at 80% 0%,#241038,transparent 44%),#0b0818;color:var(--ink)}
+.side{background:linear-gradient(150deg,#130a27,#25113d 68%,#120a20);border-right:1px solid #50316b}
+.brand span{color:#be6bff}.brandHint{color:#b49ac9}.nav-link{color:#cab9db}.nav-link:hover,.nav-link.active{color:#fff;background:#6824b04d}.nav-link.active{box-shadow:inset 3px 0 #c781ff}
+.sideFooter a{color:#d1adf6;border-color:#65417e}.sideFooter small{color:#ab8bc0}
+.eyebrow{color:#b867fa}.subtitle,.muted,.viewHead p,.sectionLabel{color:#b7a5c8}
+.kpi,.panel{background:linear-gradient(150deg,#1c1430,#151023);border-color:#56396e;box-shadow:0 8px 26px #03000855;color:#f6efff}
+.kpi:nth-child(1) .kpi-icon,.kpi:nth-child(2) .kpi-icon,.kpi:nth-child(3) .kpi-icon,.kpi:nth-child(4) .kpi-icon{background:#3f225d}
+.kpi .name{color:#bba7d2}
+.quick button,.panel .quick button{background:#291942;color:#f6eaff;border-color:#664087}
+.quick button:hover,.panel .quick button:hover{background:#3b215c}
+.quick button span{color:#c2afd5}
+.notice,.importHelp{background:#251936;color:#d6c1eb;border-color:#573b77}
+.importHelp code{background:#1a112b;color:#ddb7ff}.importHelp p{color:#c1acd4}
+.item,.userRow{background:#1e152f;border-color:#52396a;color:#e8dff2}
+.item p,.userDate,.userTag{color:#c2b1d3}
+.userAvatar{background:#462568;color:#e9c0ff}.userTag.ok{background:#133d33;color:#9ae8c4}.userTag.bad{background:#4a1b31;color:#ff9cb1}.userTag.warn{background:#573618;color:#ffcd88}
+.userToolbar input{background:#221631;border-color:#66417f;color:#fff}
+label{color:#d7c4ea}
+label input:not([type=checkbox]),label textarea,select,textarea{background:#20162f;border-color:#664781;color:#fff}
+label input:focus,textarea:focus,select:focus{border-color:#aa62f0;box-shadow:0 0 0 3px #9b52db33}
+input[type=checkbox]{accent-color:#a34bee}
+button.primary,.panel button:not(.secondary):not(.danger){background:linear-gradient(130deg,#9f43e9,#6725ba);color:white;border:1px solid #9a5eda}
+button.secondary{color:#f1dfff;background:#342047;border-color:#6e4a89}
+button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
+#adminBell,.refresh{background:#291a3c;border-color:#6f498b;color:#f1d7ff}
+#status,#userFeedback{color:#bda5d2}
+#gate #gateMessage{background:#211630;border:1px solid #68468a;padding:20px;border-radius:13px;color:#dbc7eb}
+.gateBrand{color:#c06cff}
+.previewTable th{color:#d6b5f2;background:#281941}.previewTable td{border-color:#53396d}
 </style></head>
 <body>
 <div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="gateMessage">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
@@ -129,9 +161,12 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
      <form id="listingForm"><div class="grid">
       <label>Jeu<input name="game" required placeholder="Clash of Clans"></label>
       <label>Titre<input name="title" required placeholder="HDV 18 presque max"></label>
-      <label>Prix (€)<input name="price" type="number" min="0" step=".01" required></label>
+      <label>Prix (€) — 0 pour « sur devis »<input name="price" type="number" min="0" step=".01" required></label>
       <label>Image (URL ou fichier)<input name="image_url" placeholder="Hdv18.jpg"></label>
       <label>Mode de vente<select name="supply_mode"><option value="stock">En stock</option><option value="on_request">Sur commande (disponibilité à confirmer)</option></select></label>
+      <label>Type d'annonce<select name="offer_type"><option value="standard">Annonce standard</option><option value="custom">Compte HDV sur demande</option><option value="random">HDV aléatoire promotionnel</option></select></label>
+      <label>Réduction en %<input name="discount_percent" type="number" min="0" max="90" step="1" value="0"></label>
+      <label>Niveau HDV (facultatif)<input name="town_hall_level" type="number" min="1" max="20" placeholder="15, 16, 17 ou 18"></label>
       <label>Référence fournisseur (facultatif)<input name="supplier_reference" placeholder="Référence unique fournisseur"></label>
       <label>Lien source fournisseur (facultatif)<input name="source_url" type="url" placeholder="https://..."></label>
      </div>
@@ -363,13 +398,13 @@ async function load(){
   const row=document.createElement('div');row.className='item';
   const title=document.createElement('strong');title.textContent=item.title+' — '+Number(item.price).toFixed(2)+' €';
   const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'En ligne':'Masquée')+(item.supply_mode==='on_request'?' · Sur commande':'');
-  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':'');form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
+  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','offer_type','discount_percent','town_hall_level','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':key==='offer_type'?'standard':key==='discount_percent'?0:'');form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
   const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
   row.append(title,sub,edit,del);$('items').append(row)
  }
 }
 $('listingForm').onsubmit=async e=>{
- e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,active:form.elements.active.checked,sold:form.elements.sold.checked};
+ e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,offer_type:form.elements.offer_type.value,discount_percent:Number(form.elements.discount_percent.value)||0,town_hall_level:form.elements.town_hall_level.value?Number(form.elements.town_hall_level.value):null,active:form.elements.active.checked,sold:form.elements.sold.checked};
  const q=editId?db.from('listings').update(value).eq('id',editId):db.from('listings').insert(value);
  const {error}=await q;$('status').textContent=error?error.message:'Annonce enregistrée';if(!error){clear();await load()}
 };
