@@ -16,6 +16,21 @@ const css=document.createElement('style');css.textContent=`
 #supportTicket{padding:12px;background:white;border-top:1px solid #cadcf1}#supportTicket[hidden]{display:none}#supportTicket input,#supportTicket textarea{width:100%;padding:9px;border:1px solid #bbcee7;border-radius:8px;margin-bottom:7px;font:inherit}#supportInput,#supportTicket input,#supportTicket textarea{font-size:16px}#supportTicket button{background:#145ab1;color:white;border:0;border-radius:8px;padding:10px}
 @media(max-width:500px){#supportPanel{right:8px;bottom:76px;width:calc(100vw - 16px);height:min(650px,calc(100dvh - 90px));border-radius:16px}#supportLaunch{right:12px;bottom:12px;padding:13px 16px}#supportHead{padding:14px}#supportMessages{padding:12px}#supportForm{padding:9px}#supportQuick{padding:7px 9px}#supportHuman{margin:0 9px 8px}}
 @media(max-height:540px){#supportPanel{bottom:8px;height:calc(100dvh - 16px)}#supportLaunch{bottom:8px}}
+
+/* Violet neon support theme */
+#supportLaunch{background:linear-gradient(125deg,#8d37e2,#532099);border-color:#bd75f5;box-shadow:0 12px 35px #3f12638c}
+#supportPanel{background:#171124;color:#f7eaff;border-color:#744995;box-shadow:0 15px 70px #05010a99}
+#supportHead{background:linear-gradient(110deg,#29133f,#732bb2);color:white}
+#supportHead small{color:#d9b9f0}
+#supportMessages{background:#18102a}
+.supportBubble{background:#34204a;color:#f5eaff}
+.supportBubble.me{background:linear-gradient(125deg,#8035c9,#5e2499);color:white}
+#supportQuick,#supportForm,#supportTicket{background:#1b132b;border-color:#49325e}
+#supportQuick button{color:#e8cdff;background:#2c1b40;border-color:#6b458e}
+#supportInput,#supportTicket input,#supportTicket textarea{background:#241733;color:white;border-color:#634586}
+#supportSend,#supportTicket button{background:linear-gradient(110deg,#9e47e7,#6b29b5);color:white}
+#supportHuman{background:#38234d;color:#e7bdff;border-color:#754a99}
+#supportClose{background:#48235e;color:white;border-color:#9369b0}
 `;document.head.append(css);
 const el=(tag,id,text)=>{const e=document.createElement(tag);if(id)e.id=id;if(text)e.textContent=text;return e};
 const launch=el('button','supportLaunch','💬 Assistance');launch.type='button';launch.setAttribute('aria-label','Ouvrir l’assistance IG Buy Now');
