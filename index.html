@@ -127,14 +127,17 @@ header{padding-top:17px;padding-bottom:18px}.headerTop{display:flex;align-items:
 .deliveryMark{width:42px;height:42px;display:grid;place-items:center;background:#fff;border-radius:13px;font-size:21px;flex-shrink:0}
 .listing .status.onRequest{color:#1767be;font-weight:800}.listing .descriptionNotice{font-size:11px;color:#6686ad;margin:4px 0 0}
 @media(max-width:680px){.deliveryPromise{padding:14px;gap:10px;border-radius:12px}.deliveryPromise strong{font-size:15px}.deliveryPromise p{font-size:11px}.deliveryMark{width:34px;height:34px;font-size:17px}}
+.listingControls{display:flex;flex-direction:column;align-items:center;gap:10px;margin:20px 0 25px;font-size:12px;color:var(--muted)}
+#loadMoreListings{border:1px solid var(--border);background:var(--card);color:var(--ink);font-weight:800;padding:12px 25px;border-radius:11px}
+#loadMoreListings[hidden]{display:none}#loadMoreListings:hover{border-color:#3981dd}
 </style></head><body><header><div class="headerTop"><a class="brand" href="./" aria-label="IG Buy Now, accueil">IG <span>BUY NOW</span></a><div class="bar"><button id="theme" type="button">🌙 Nuit</button><button id="notifyBell" type="button" aria-label="Notifications">🔔 <span id="notifyCount" hidden></span></button><button id="adminShortcut" type="button" hidden>🛡 Admin</button><button id="account" type="button">👤 Compte</button></div></div><nav class="siteNav" aria-label="Navigation principale"><a href="#annonces">🎮 Annonces</a><a href="./checkout.html">🛒 Commander</a><a href="#supportInfo" id="navSupport">💬 Assistance</a></nav><div id="notifyPanel" hidden aria-label="Centre de notifications"></div><div class="searchWrap"><label for="search">Rechercher un compte gaming</label><input id="search" class="search" type="search" placeholder="🔎 Jeu, niveau, description…" autocomplete="off"></div></header><main><section class="hero"><div class="heroBadge">🎮 COMPTES GAMING</div><h1>Ton prochain compte gaming commence ici.</h1><p>Explore les annonces disponibles, consulte les détails et échange avec notre assistance avant de te décider.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><section class="deliveryPromise" aria-label="Service sur commande">
  <div class="deliveryMark">🛡️</div><div><strong>Livraison sous 48 h ou remboursement</strong>
  <p>Pour toute commande confirmée et réglée après vérification de la disponibilité. Nous contactons le fournisseur et coordonnons la livraison. Si la livraison ne peut pas être effectuée dans ce délai, remboursement du paiement reçu. Actuellement, le règlement en ligne n’est pas activé : les demandes sont sans paiement.</p></div>
- </section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div class="notice" id="supportInfo"><strong>Besoin d’un conseil ?</strong> Notre assistance est disponible depuis le bouton en bas de l’écran. Les annonces sont publiées uniquement par IG Buy Now. Le paiement n’est pas encore activé.</div></main><footer><strong>IG BUY NOW</strong><span>Marketplace gaming · Paiements en préparation</span><a href="#annonces">Voir les annonces</a></footer><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
+ </section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div id="listingControls" class="listingControls"><button id="loadMoreListings" type="button" hidden>Afficher plus d’annonces</button><span id="listingResultInfo" aria-live="polite"></span></div><div class="notice" id="supportInfo"><strong>Besoin d’un conseil ?</strong> Notre assistance est disponible depuis le bouton en bas de l’écran. Les annonces sont publiées uniquement par IG Buy Now. Le paiement n’est pas encore activé.</div></main><footer><strong>IG BUY NOW</strong><span>Marketplace gaming · Paiements en préparation</span><a href="#annonces">Voir les annonces</a></footer><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
 (function(){
  const $=id=>document.getElementById(id);
  const modal=$('modal');
- let listings=[];
+ let listings=[];const pageSize=24;let totalListings=0;let loading=false;let requestVersion=0;let searchTimer;
  function show(title,body){$('modalContent').replaceChildren();let h=document.createElement('h2'),p=document.createElement('p');h.textContent=title;p.textContent=body;$('modalContent').append(h,p);modal.classList.add('show')}
  $('close').onclick=()=>modal.classList.remove('show');
  modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
@@ -144,8 +147,8 @@ header{padding-top:17px;padding-bottom:18px}.headerTop{display:flex;align-items:
  function render(){
    const grid=$('listingGrid');grid.replaceChildren();
    const q=$('search').value.trim().toLocaleLowerCase('fr');
-   const visible=listings.filter(a=>a.active!==false && (a.title+' '+a.description+' '+a.game).toLocaleLowerCase('fr').includes(q));
-   if(!visible.length){let p=document.createElement('p');p.className='notice';p.textContent='Aucune annonce trouvée.';grid.append(p);return}
+   const visible=listings.filter(a=>a.active!==false);
+   if(!visible.length){let p=document.createElement('p');p.className='notice';p.textContent=loading?'Chargement des annonces…':'Aucune annonce trouvée.';grid.append(p);return}
    for(const a of visible){
      const article=document.createElement('article');article.className='listing';
      const photo=document.createElement('div');photo.className='photo';
@@ -168,8 +171,35 @@ header{padding-top:17px;padding-bottom:18px}.headerTop{display:flex;align-items:
    }
    document.dispatchEvent(new Event('igbn:listings-rendered'));
  }
- $('search').oninput=render;
  const navSupport=$('navSupport');if(navSupport)navSupport.onclick=e=>{e.preventDefault();document.getElementById('supportLaunch')?.click()};
- fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json()).then(async cfg=>{const url=cfg.supabaseUrl+'/rest/v1/listings?select=*&active=eq.true&order=created_at.desc';const r=await fetch(url,{headers:{apikey:cfg.supabaseAnonKey}});if(!r.ok)throw Error('Chargement impossible');return r.json()}).then(data=>{listings=(Array.isArray(data)?data:[]).map(a=>({...a,image:a.image_url}));render()}).catch(()=>{$('listingGrid').textContent='Les annonces sont temporairement indisponibles.'});
+ let authConfig=null;
+ function refreshMore(){
+  const b=$('loadMoreListings');b.hidden=loading||!authConfig||listings.length>=totalListings;
+  $('listingResultInfo').textContent=totalListings?listings.length+' sur '+totalListings+' annonces affichées':'';
+ }
+ async function loadListings(reset=false){
+  if(!authConfig)return;
+  if(loading&&!reset)return;
+  const stamp=++requestVersion;
+  if(reset){listings=[];totalListings=0;render()}
+  loading=true;refreshMore();
+  try{
+   const from=listings.length,to=from+pageSize-1;
+   const url=new URL(authConfig.supabaseUrl+'/rest/v1/listings');
+   url.searchParams.set('select','*');url.searchParams.set('active','eq.true');url.searchParams.set('order','created_at.desc');
+   const query=$('search').value.trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);
+   if(query)url.searchParams.set('or','(title.ilike.*'+query+'*,description.ilike.*'+query+'*,game.ilike.*'+query+'*)');
+   const response=await fetch(url.toString(),{headers:{apikey:authConfig.supabaseAnonKey,Range:from+'-'+to,Prefer:'count=exact'}});
+   if(!response.ok)throw new Error('Impossible de charger le catalogue');
+   const rows=await response.json();
+   if(stamp!==requestVersion)return;
+   totalListings=Number(response.headers.get('content-range')?.split('/')[1])||0;
+   listings.push(...rows.map(a=>({...a,image:a.image_url})));
+  }catch(e){if(stamp===requestVersion){$('listingResultInfo').textContent='Erreur de chargement. Réessayez.'}}
+  finally{if(stamp===requestVersion){loading=false;render();refreshMore()}}
+ }
+ $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadListings(true),240)};
+ $('loadMoreListings').onclick=()=>loadListings(false);
+ fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json()).then(cfg=>{authConfig=cfg;loadListings(true)}).catch(()=>{$('listingGrid').textContent='Les annonces sont temporairement indisponibles.'});
 })();
 </script><script type="module" src="./js/auth.js"></script><script type="module" src="./js/support.js"></script><script type="module" src="./js/notifications.js"></script></body></html>
