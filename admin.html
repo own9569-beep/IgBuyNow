@@ -78,6 +78,12 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
 .userPager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:15px}.userPager button{padding:9px 12px}.userPager small{color:#7c8ba2}
 #userFeedback{margin:6px 0 15px;font-size:13px;line-height:1.5;color:#537397}
 @media(max-width:540px){.userRow{padding:13px}.userHeader{display:block}.userActions button{flex:1}.userToolbar input{min-width:100%;font-size:16px}}
+
+.importHelp{background:#f5f8ff;border:1px solid #dce7f8;border-radius:12px;padding:13px 15px;margin:12px 0 17px;font-size:12px}
+.importHelp summary{font-weight:800;color:#1854a5;cursor:pointer}.importHelp p{font-size:12px;color:#60748e;line-height:1.5}.importHelp code{display:block;background:#eaf1fb;padding:9px;border-radius:8px;overflow-x:auto;color:#164576;font-size:12px}
+.importCheck{display:flex;align-items:flex-start;gap:8px;line-height:1.6;margin:15px 0}.importCheck input{flex:none;margin-top:2px}
+.importButtons{display:flex;flex-wrap:wrap;gap:8px}.importButtons button:disabled{opacity:.5;cursor:not-allowed}
+.previewTable{overflow-x:auto;max-height:230px;overflow-y:auto;font-size:12px}.previewTable table{border-collapse:collapse;width:100%;min-width:480px}.previewTable td,.previewTable th{text-align:left;padding:8px;border-bottom:1px solid #e5ebf4}.previewTable th{color:#5b7799;background:#f7f9fd}
 </style></head>
 <body>
 <div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="gateMessage">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
@@ -125,6 +131,9 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
       <label>Titre<input name="title" required placeholder="HDV 18 presque max"></label>
       <label>Prix (€)<input name="price" type="number" min="0" step=".01" required></label>
       <label>Image (URL ou fichier)<input name="image_url" placeholder="Hdv18.jpg"></label>
+      <label>Mode de vente<select name="supply_mode"><option value="stock">En stock</option><option value="on_request">Sur commande (disponibilité à confirmer)</option></select></label>
+      <label>Référence fournisseur (facultatif)<input name="supplier_reference" placeholder="Référence unique fournisseur"></label>
+      <label>Lien source fournisseur (facultatif)<input name="source_url" type="url" placeholder="https://..."></label>
      </div>
      <label>Description<textarea name="description" rows="4" placeholder="Décrivez précisément le compte et ses caractéristiques…"></textarea></label>
      <div class="checkLine"><label><input name="active" type="checkbox" checked> Annonce visible</label><label><input name="sold" type="checkbox"> Vendue</label></div>
@@ -132,6 +141,19 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
      </form>
     </div>
     <div class="panel"><div class="panelHeading"><h2>Catalogue</h2><span class="sectionLabel">Vos comptes</span></div><div id="items">Chargement…</div></div>
+   <div class="panel" id="bulkImportPanel">
+ <div class="panelHeading"><h2>Importer un catalogue fournisseur</h2></div>
+ <p class="muted">Importez en une fois des offres pour lesquelles vous possédez une autorisation de diffusion. Les comptes seront affichés <strong>sur commande</strong> : la disponibilité doit être vérifiée avant d'accepter un paiement. Les prix du fichier doivent être en <strong>euros, frais et marge compris</strong>.</p>
+ <details class="importHelp"><summary>Format CSV attendu</summary><p>Colonnes séparées par un point-virgule, avec la première ligne :</p>
+ <code>reference;jeu;titre;prix_eur;description;image_url;url_source</code><p>Seuls <strong>reference, titre et prix_eur</strong> sont obligatoires. Une même référence met à jour l'annonce lors des imports suivants.</p>
+ </details>
+ <label>Fichier CSV fournisseur<input id="supplierCsvFile" type="file" accept=".csv,text/csv" style="background:#f8fbff"></label>
+ <label>Ou coller les lignes CSV<textarea id="supplierCsvText" rows="5" placeholder="reference;jeu;titre;prix_eur;description;image_url;url_source"></textarea></label>
+ <label class="importCheck"><input id="supplierImportConsent" type="checkbox"> Je confirme disposer de l'autorisation de republier et proposer ces offres, et avoir vérifié leurs prix.</label>
+ <div class="importButtons"><button id="supplierImportPreview" type="button" class="secondary">Vérifier le fichier</button><button id="supplierImportSend" type="button" class="primary" disabled>Importer les annonces vérifiées</button></div>
+ <p id="supplierImportStatus" role="status" class="muted"></p>
+ <div id="supplierImportPreviewList"></div>
+</div>
    </div>
   </section>
   <section class="view" id="view-orders" hidden>
@@ -340,15 +362,117 @@ async function load(){
  for(const item of data){
   const row=document.createElement('div');row.className='item';
   const title=document.createElement('strong');title.textContent=item.title+' — '+Number(item.price).toFixed(2)+' €';
-  const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'En ligne':'Masquée');
-  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url'])form.elements[key].value=item[key]??'';form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
+  const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'En ligne':'Masquée')+(item.supply_mode==='on_request'?' · Sur commande':'');
+  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':'');form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
   const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
   row.append(title,sub,edit,del);$('items').append(row)
  }
 }
 $('listingForm').onsubmit=async e=>{
- e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,active:form.elements.active.checked,sold:form.elements.sold.checked};
+ e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,active:form.elements.active.checked,sold:form.elements.sold.checked};
  const q=editId?db.from('listings').update(value).eq('id',editId):db.from('listings').insert(value);
  const {error}=await q;$('status').textContent=error?error.message:'Annonce enregistrée';if(!error){clear();await load()}
 };
+
+/* Authorized supplier CSV import. No scraping or third-party API calls. */
+let supplierImportRows=[];
+function parseCsv(raw){
+ const text=String(raw||'').replace(/^\uFEFF/,'').trim();
+ if(!text)throw Error('Choisissez un fichier CSV ou collez des données.');
+ const first=text.split(/\r?\n/,1)[0];
+ const separator=(first.match(/;/g)||[]).length>=(first.match(/,/g)||[]).length?';':',';
+ const rows=[];let row=[],field='',quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i],next=text[i+1];
+  if(c==='"'){
+   if(quoted&&next==='"'){field+='"';i++}else quoted=!quoted;
+  }else if(c===separator&&!quoted){row.push(field);field=''}
+  else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&next==='\n')i++;row.push(field);if(row.some(x=>x.trim()))rows.push(row);field='';row=[]}
+  else field+=c;
+ }
+ if(quoted)throw Error('Le fichier CSV contient une valeur entre guillemets non fermée.');
+ row.push(field);if(row.some(x=>x.trim()))rows.push(row);
+ return rows;
+}
+function parseSupplierCatalog(text){
+ const rows=parseCsv(text);
+ if(rows.length<2)throw Error('Le fichier doit contenir l’en-tête et au moins une ligne.');
+ const columns=rows[0].map(h=>h.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+ const lookup=opts=>opts.map(x=>columns.indexOf(x)).find(x=>x>=0)??-1;
+ const ix={
+  ref:lookup(['reference','ref','id','supplier_reference','reference_fournisseur']),
+  title:lookup(['titre','title','nom']),
+  price:lookup(['prix_eur','prix','price','price_eur']),
+  game:lookup(['jeu','game']),
+  description:lookup(['description','details']),
+  image:lookup(['image_url','image','photo']),
+  url:lookup(['url_source','source_url','lien'])
+ };
+ if(ix.ref<0||ix.title<0||ix.price<0)throw Error('Colonnes obligatoires : reference, titre, prix_eur.');
+ const parsed=[],dupes=new Set();
+ for(let n=1;n<rows.length;n++){
+  const cells=rows[n];
+  if(cells.every(x=>!x.trim()))continue;
+  const val=k=>ix[k]<0?'':String(cells[ix[k]]||'').trim();
+  const ref=val('ref'),title=val('title'),number=val('price').replace(/€/g,'').replace(/\s/g,'').replace(',','.');
+  const price=Number(number);
+  if(!ref||ref.length>190||!title||title.length>250||!Number.isFinite(price)||price<=0||price>100000)
+   throw Error('Ligne '+(n+1)+' : référence, titre ou prix en euros invalide.');
+  if(dupes.has(ref))throw Error('Référence répétée : '+ref);
+  dupes.add(ref);
+  let link=val('url');if(link&&!/^https:\/\//i.test(link))throw Error('Ligne '+(n+1)+' : URL fournisseur HTTPS requise.');
+  let image=val('image');if(image&&!/^https:\/\//i.test(image))image='';
+  parsed.push({
+   supplier_reference:ref,game:val('game')||'Clash of Clans',title,
+   description:(val('description')||'Compte proposé sur commande. Disponibilité à confirmer avant paiement.').slice(0,1000),
+   price,source_url:link||null,image_url:image||null,
+   supply_mode:'on_request',active:true,sold:false
+  });
+ }
+ if(!parsed.length)throw Error('Aucune annonce valide.');
+ if(parsed.length>5000)throw Error('Import limité à 5000 annonces par fichier. Séparez le catalogue.');
+ return parsed;
+}
+async function previewSupplier(){
+ $('supplierImportSend').disabled=true;supplierImportRows=[];
+ const box=$('supplierImportPreviewList');box.replaceChildren();
+ try{
+  const file=$('supplierCsvFile').files?.[0];
+  const pasted=$('supplierCsvText').value.trim();
+  const csv=pasted|| (file? await file.text():'');
+  supplierImportRows=parseSupplierCatalog(csv);
+  const wrap=document.createElement('div');wrap.className='previewTable';const table=document.createElement('table');
+  const headings=document.createElement('tr');
+  for(const h of ['Référence','Jeu','Titre','Prix (€)']){const th=document.createElement('th');th.textContent=h;headings.append(th)}
+  table.append(headings);
+  for(const item of supplierImportRows.slice(0,8)){
+   const tr=document.createElement('tr');
+   for(const txt of [item.supplier_reference,item.game,item.title,item.price.toFixed(2)]){const td=document.createElement('td');td.textContent=txt;tr.append(td)}table.append(tr);
+  }
+  wrap.append(table);box.append(wrap);
+  $('supplierImportStatus').textContent=supplierImportRows.length+' annonce(s) valide(s). Aperçu des 8 premières. Toutes seront proposées sur commande.';
+  $('supplierImportSend').disabled=!$('supplierImportConsent').checked;
+ }catch(e){$('supplierImportStatus').textContent='Erreur : '+e.message}
+}
+$('supplierCsvFile').onchange=()=>{$('supplierCsvText').value='';supplierImportRows=[];$('supplierImportSend').disabled=true};
+$('supplierCsvText').oninput=()=>{supplierImportRows=[];$('supplierImportSend').disabled=true};
+$('supplierImportConsent').onchange=()=>{$('supplierImportSend').disabled=!$('supplierImportConsent').checked||!supplierImportRows.length};
+$('supplierImportPreview').onclick=previewSupplier;
+$('supplierImportSend').onclick=async()=>{
+ if(!$('supplierImportConsent').checked||!supplierImportRows.length)return;
+ if(!confirm('Publier '+supplierImportRows.length+' offre(s) sur commande ? Assurez-vous de disposer des droits de republication, du prix final en euros et de pouvoir honorer le délai annoncé.'))return;
+ const btn=$('supplierImportSend');btn.disabled=true;let done=0;
+ try{
+  for(let i=0;i<supplierImportRows.length;i+=40){
+   const batch=supplierImportRows.slice(i,i+40);
+   const {error}=await db.from('listings').upsert(batch,{onConflict:'supplier_reference'});
+   if(error)throw new Error('Échec de l’import après '+done+' annonce(s) : '+error.message);
+   done+=batch.length;$('supplierImportStatus').textContent=done+' / '+supplierImportRows.length+' offres importées.';
+  }
+  $('supplierImportStatus').textContent='✅ '+done+' offres enregistrées. Elles apparaîtront sur l’accueil avec le statut Sur commande.';
+  $('status').textContent='Catalogue fournisseur importé : '+done+' annonces.';await load();await updateOverview();
+ }catch(e){$('supplierImportStatus').textContent='Erreur : '+e.message}
+ finally{btn.disabled=!$('supplierImportConsent').checked||!supplierImportRows.length}
+};
+
 </script></body></html>
