@@ -171,7 +171,7 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
       <label>Lien source fournisseur (facultatif)<input name="source_url" type="url" placeholder="https://..."></label>
      </div>
      <label>Description<textarea name="description" rows="4" placeholder="Décrivez précisément le compte et ses caractéristiques…"></textarea></label>
-     <div class="checkLine"><label><input name="active" type="checkbox" checked> Annonce visible</label><label><input name="sold" type="checkbox"> Vendue</label></div>
+     <div class="checkLine"><label><input name="active" type="checkbox" checked> Annonce publiée et visible par tous (même sans connexion)</label><label><input name="sold" type="checkbox"> Vendue</label></div>
      <button type="submit" class="primary">Enregistrer l'annonce</button><button type="button" id="reset" class="secondary">Réinitialiser</button>
      </form>
     </div>
@@ -397,10 +397,11 @@ async function load(){
  for(const item of data){
   const row=document.createElement('div');row.className='item';
   const title=document.createElement('strong');title.textContent=item.title+' — '+Number(item.price).toFixed(2)+' €';
-  const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'En ligne':'Masquée')+(item.supply_mode==='on_request'?' · Sur commande':'');
+  const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'Publiée · visible aux invités':'Brouillon masqué')+(item.supply_mode==='on_request'?' · Sur commande':'');
   const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','offer_type','discount_percent','town_hall_level','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':key==='offer_type'?'standard':key==='discount_percent'?0:'');form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
+  const publish=document.createElement('button');publish.textContent=item.active?'🟢 Publiée aux invités · Masquer':'🌍 Publier pour tous';publish.className='secondary';publish.type='button';publish.onclick=async()=>{const {error}=await db.from('listings').update({active:!item.active}).eq('id',item.id);$('status').textContent=error?error.message:(item.active?'Annonce masquée aux visiteurs.':'Annonce publiée pour les visiteurs, y compris les invités.');if(!error){await load();await updateOverview()}};
   const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
-  row.append(title,sub,edit,del);$('items').append(row)
+  row.append(title,sub,publish,edit,del);$('items').append(row)
  }
 }
 $('listingForm').onsubmit=async e=>{
