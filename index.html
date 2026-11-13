@@ -100,7 +100,7 @@ body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
      info.append(price,status);
      const actions=document.createElement('div');actions.className='actions';
      const detail=document.createElement('button');detail.textContent='Voir l’annonce';detail.onclick=()=>show(a.title,a.description);
-     const buy=document.createElement('button');buy.className='primary';buy.textContent=a.sold?'Indisponible':'Acheter';buy.disabled=!!a.sold;buy.onclick=()=>show('Paiement bientôt disponible','Les paiements ne sont pas encore activés. Aucun débit ne peut être effectué.');
+     const buy=document.createElement('button');buy.className='primary';buy.textContent=a.sold?'Indisponible':'Acheter';buy.disabled=!!a.sold;buy.onclick=()=>{location.href='./checkout.html?id='+encodeURIComponent(a.id)};
      actions.append(detail,buy);bottom.append(info,actions);content.append(h,desc,bottom);article.append(photo,content);grid.append(article);
    }
  }
