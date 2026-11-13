@@ -1,5 +1,138 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administration — IG Buy Now</title><style>
-:root{font-family:system-ui,sans-serif;color:#112b51;background:#e8effa}*{box-sizing:border-box}body{margin:0}header{padding:22px;background:linear-gradient(120deg,#071b3c,#125bb3);color:white}header a{color:white}main{max-width:980px;margin:25px auto;padding:0 18px}.panel{background:white;border:1px solid #cbdaf0;border-radius:17px;padding:24px;margin:18px 0;box-shadow:0 8px 28px #153f7512}h1{margin:0 0 8px;font-size:26px}h2{font-size:20px}label{display:block;margin:12px 0;font-size:13px;font-weight:700}input,textarea{display:block;width:100%;margin-top:6px;border:1px solid #bfd1ea;border-radius:9px;padding:12px;font:inherit}button{background:#1457ab;color:white;border:0;border-radius:9px;padding:12px 16px;font-weight:700;cursor:pointer;margin:5px 6px 5px 0}#adminBell[hidden],#adminNotifications[hidden]{display:none}#adminBell{margin-top:8px;background:#e8f3ff;color:#104782}button.secondary{background:#e4efff;color:#134a8b}button.danger{background:#a82938}.item{border-top:1px solid #d8e2f2;padding:14px 0}small{color:#58728d}#status{font-weight:650}.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}@media(max-width:600px){.grid{display:block}.panel{padding:17px}}html{min-width:320px}body{overflow-x:hidden}header{padding:22px max(18px,calc((100vw - 1000px)/2))}header h1{margin-top:14px}main{max-width:1020px}.panel{overflow-wrap:anywhere}textarea{resize:vertical;min-height:80px}@media(max-width:600px){header{padding:18px 14px}header h1{font-size:22px}main{margin:13px auto;padding:0 12px}.panel{padding:16px;margin:12px 0;border-radius:13px}h2{font-size:18px}button{max-width:100%;font-size:13px;padding:11px}input,textarea{font-size:16px}}</style></head><body><header><a href="./">← Retour à la boutique</a><h1>IG BUY NOW · Administration</h1><button id="adminBell" type="button" hidden>🔔 Notifications <span id="adminUnread"></span></button><div id="adminNotifications" class="panel" hidden></div></header><main><p id="status">Vérification des autorisations…</p><section id="dashboard" hidden><div class="panel"><h2 id="formTitle">Nouvelle annonce</h2><form id="listingForm"><div class="grid"><label>Jeu<input name="game" required placeholder="Clash of Clans"></label><label>Titre<input name="title" required></label><label>Prix (€)<input name="price" type="number" min="0" step=".01" required></label><label>Image (URL ou nom du fichier)<input name="image_url" placeholder="Hdv18.jpg"></label></div><label>Description<textarea name="description" rows="4"></textarea></label><label><input name="active" type="checkbox" checked style="display:inline;width:auto"> Annonce visible</label><label><input name="sold" type="checkbox" style="display:inline;width:auto"> Vendue</label><button type="submit">Enregistrer l'annonce</button><button type="button" id="reset" class="secondary">Nouvelle annonce</button></form></div><div class="panel"><h2>Mes annonces</h2><div id="items">Chargement…</div></div><div class="panel" id="orders"><h2>🛒 Demandes d’achat <span id="orderCount"></span></h2><p>Ces demandes ne sont pas des commandes payées. Les paiements sont désactivés.</p><div id="ordersList">Chargement…</div></div><div class="panel" id="likes"><h2>❤️ Favoris clients</h2><div id="likesList">Chargement…</div></div><div class="panel" id="tickets"><h2>📨 Messages clients <span id="ticketCount"></span></h2><p>Demandes enregistrées par les clients connectés.</p><div id="ticketsList">Chargement…</div></div></section></main><script type="module">
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IG Buy Now — Espace administrateur</title>
+<meta name="theme-color" content="#071b36">
+<style>
+:root{--bg:#f2f5fb;--ink:#172c4b;--muted:#718097;--stroke:#e1e7f0;--nav:#0b2140;--blue:#155bc5;--shadow:0 8px 30px rgba(14,40,79,.06);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;transition:background .15s,transform .15s}button:active{transform:scale(.98)}[hidden]{display:none!important}
+#gate{max-width:560px;margin:16vh auto;padding:20px;text-align:center}.gateBrand{font-size:22px;font-weight:900;letter-spacing:.08em;color:#1251a3}
+#gate #status{padding:20px;border:1px solid var(--stroke);border-radius:14px;background:white;line-height:1.6}
+#gate a{color:#155bc5;font-weight:700}
+#dashboard{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+.side{background:linear-gradient(175deg,#071c3a,#0b2751);color:#edf5ff;padding:30px 18px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh}
+.brand{font-size:20px;font-weight:900;letter-spacing:.06em;line-height:1.2}.brand span{color:#80b8ff}
+.brandHint{color:#93accd;font-size:11px;text-transform:uppercase;letter-spacing:.15em;margin-top:8px;font-weight:800}
+.nav{display:flex;flex-direction:column;gap:6px}.nav-link{display:flex;align-items:center;gap:10px;text-align:left;width:100%;padding:13px 14px;border-radius:12px;color:#b8c9e2;background:transparent;font-size:13px;font-weight:700}
+.nav-link:hover,.nav-link.active{background:#2f66ba42;color:#fff}.nav-link.active{box-shadow:inset 3px 0 #72aefa;background:#2460b151}
+.sideFooter{margin-top:auto;display:grid;gap:12px}.sideFooter a{color:#aecaef;text-decoration:none;font-weight:700;font-size:13px;padding:12px;border:1px solid #ffffff21;border-radius:11px;text-align:center}
+.sideFooter small{color:#7893b6;line-height:1.5;font-size:11px}
+.workspace{padding:28px clamp(16px,3vw,40px) 55px;max-width:1480px;width:100%;min-width:0;margin:0 auto}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.14em;color:var(--blue);font-weight:850;text-transform:uppercase;margin:0 0 7px}
+h1{margin:0;font-size:clamp(23px,3vw,31px);letter-spacing:-.04em;line-height:1.2}h2{font-size:18px;letter-spacing:-.02em;margin:0}h3{font-size:14px;margin:0}.subtitle{color:var(--muted);font-size:13px;margin:9px 0 0}
+.topActions{display:flex;align-items:center;gap:9px;flex-shrink:0}
+#adminBell{background:white;border:1px solid var(--stroke);color:var(--ink);padding:11px 13px;border-radius:12px;box-shadow:var(--shadow);font-size:13px}
+#adminUnread{display:inline-flex;align-items:center;justify-content:center;min-width:20px;background:#ee4962;color:white;font-size:10px;padding:2px 5px;border-radius:20px}
+#adminUnread:empty{display:none}
+#status{font-size:12px;color:#58728f;margin:9px 0 0;overflow-wrap:anywhere}
+.view{animation:fade .16s ease}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}
+.kpi{background:#fff;border:1px solid var(--stroke);border-radius:17px;padding:19px;box-shadow:var(--shadow);min-width:0}
+.kpi-icon{display:grid;place-items:center;background:#eaf3ff;width:42px;height:42px;border-radius:12px;font-size:20px;margin-bottom:17px}
+.kpi .num{display:block;font-weight:850;font-size:clamp(25px,3vw,32px);letter-spacing:-.05em;line-height:1.1}
+.kpi .name{font-size:12px;color:var(--muted);font-weight:700;margin-top:7px}.kpi:nth-child(2) .kpi-icon{background:#fff3e8}.kpi:nth-child(3) .kpi-icon{background:#f1ecff}.kpi:nth-child(4) .kpi-icon{background:#ffedf2}
+.panel{background:white;border:1px solid var(--stroke);border-radius:17px;box-shadow:var(--shadow);padding:22px;margin:0 0 18px;min-width:0}
+.panelHeading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.muted{font-size:13px;line-height:1.6;color:var(--muted);margin:8px 0 14px}
+.brow{color:#185ab0;font-size:11px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;margin:0 0 7px}
+.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.quick button{padding:19px 15px;text-align:left;min-height:100px;background:#f1f6ff;border:1px solid #dce8fa;border-radius:14px;color:#163b73}
+.quick button strong{display:block;margin:10px 0 4px;font-size:14px}.quick button span{display:block;font-size:12px;color:#6783a9;line-height:1.5}
+.notice{background:#ecf5ff;border:1px solid #d3e6ff;border-radius:13px;padding:15px 17px;font-size:13px;line-height:1.65;color:#255489}
+.columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start}
+label{display:block;font-size:12px;font-weight:750;color:#2d4263;margin:0 0 13px}
+label input:not([type=checkbox]),label textarea,select,textarea{width:100%;min-width:0;margin-top:6px;border:1px solid #d5dfec;border-radius:10px;padding:12px;background:#fff;color:var(--ink);outline:none}
+label input:focus,textarea:focus,select:focus{border-color:#3583d8;box-shadow:0 0 0 3px #3287ef18}
+input[type=checkbox]{accent-color:#145ec7;vertical-align:middle;width:16px;height:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+textarea{resize:vertical;min-height:80px}.checkLine{display:flex;flex-wrap:wrap;gap:20px;margin:8px 0 14px}.checkLine label{margin:0}
+button.primary,.panel button:not(.secondary):not(.danger),.quick button{background:#155bc5;color:white;border-radius:10px;padding:11px 15px;font-size:13px;font-weight:750}
+.quick button{background:#f1f6ff;color:#163b73}
+button.primary:hover,.panel button:not(.secondary):not(.danger):hover{background:#0d4aab}.quick button:hover{background:#e6f0ff}
+button.secondary{color:#1854a5;background:#eaf2ff;border:1px solid #d6e5f9;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:750}
+button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:750}
+.item{padding:16px;margin:10px 0;border-radius:13px;border:1px solid #e4eaf4;background:#fbfcff;overflow-wrap:anywhere}
+.item>strong{display:block;font-size:14px;line-height:1.45}.item p{font-size:13px;color:#60748e;line-height:1.6;margin:8px 0}.item small{font-size:11px;color:#8a99ae;display:block;margin:5px 0 10px}.item button{margin:7px 7px 0 0}.item select,.item textarea{display:block;max-width:100%;margin-top:10px}
+#items:empty:after,#ordersList:empty:after{content:"Aucun élément pour le moment";font-size:13px;color:#8896a8}
+.sectionLabel{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:850;color:#8094af;margin-bottom:15px}
+.viewHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.viewHead p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.emptyState{padding:16px;color:#73839a}.refresh{background:white;color:#1459b5;border:1px solid var(--stroke);padding:10px 13px;border-radius:10px;font-size:12px;font-weight:700}
+@media(max-width:1120px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){#dashboard{display:block}.side{height:auto;position:relative;padding:15px 15px 11px;gap:12px}.brand{font-size:18px}.brandHint{font-size:10px;margin-top:4px}.nav{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav-link{white-space:nowrap;width:auto;padding:11px 13px;font-size:12px;flex:none}.sideFooter{display:none}.workspace{padding:20px 13px 65px}.topbar{margin-bottom:17px}.panel{padding:17px;border-radius:14px}.kpis{gap:10px;margin:16px 0}.kpi{padding:15px;border-radius:13px}.kpi-icon{width:36px;height:36px;font-size:17px;margin-bottom:12px}.quick{grid-template-columns:1fr 1fr;gap:9px}.quick button{min-height:90px;padding:13px}.grid{grid-template-columns:1fr}.viewHead h1{font-size:23px}}
+@media(max-width:380px){.quick{grid-template-columns:1fr}.topbar{flex-wrap:wrap}.kpi{padding:12px}}
+</style></head>
+<body>
+<div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="status">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
+<div id="dashboard" hidden>
+ <aside class="side">
+  <div><div class="brand">IG <span>BUY NOW</span></div><div class="brandHint">Espace administrateur</div></div>
+  <nav class="nav" aria-label="Navigation administration">
+   <button type="button" class="nav-link active" data-view="overview">▦ &nbsp; Vue d'ensemble</button>
+   <button type="button" class="nav-link" data-view="listings">🎮 &nbsp; Annonces</button>
+   <button type="button" class="nav-link" data-view="orders">🛒 &nbsp; Demandes</button>
+   <button type="button" class="nav-link" data-view="tickets">✉️ &nbsp; Messages</button>
+   <button type="button" class="nav-link" data-view="likes">❤️ &nbsp; Favoris</button>
+   <button type="button" class="nav-link" data-view="notifications">🔔 &nbsp; Notifications</button>
+  </nav>
+  <div class="sideFooter"><a href="./">← Retour à la boutique</a><small>Administration privée · IG Buy Now<br>Paiements désactivés</small></div>
+ </aside>
+ <main class="workspace">
+  <div class="topbar"><div><p class="eyebrow">Back office · IG Buy Now</p><h1 id="pageTitle">Vue d'ensemble</h1><p class="subtitle" id="adminIdentity">Votre espace de gestion</p></div><div class="topActions"><button type="button" id="adminBell" hidden>🔔 <span id="adminUnread"></span></button><button class="refresh" type="button" id="refreshData">⟳ Actualiser</button></div></div>
+  <div class="view" id="view-overview">
+   <div class="sectionLabel">Activité de votre boutique</div>
+   <div class="kpis">
+    <div class="kpi"><div class="kpi-icon">🎮</div><span id="statListings" class="num">—</span><div class="name">Annonces</div></div>
+    <div class="kpi"><div class="kpi-icon">🛒</div><span id="statOrders" class="num">—</span><div class="name">Demandes à traiter</div></div>
+    <div class="kpi"><div class="kpi-icon">✉️</div><span id="statTickets" class="num">—</span><div class="name">Messages en attente</div></div>
+    <div class="kpi"><div class="kpi-icon">❤️</div><span id="statLikes" class="num">—</span><div class="name">Favoris reçus</div></div>
+   </div>
+   <div class="panel"><div class="panelHeading"><h2>Accès rapide</h2><span class="sectionLabel">Gestion quotidienne</span></div>
+    <div class="quick">
+     <button type="button" data-view="listings">➕<strong>Gérer les annonces</strong><span>Créer, modifier ou masquer un compte.</span></button>
+     <button type="button" data-view="orders">🛒<strong>Demandes d'achat</strong><span>Suivre les intentions d'achat.</span></button>
+     <button type="button" data-view="tickets">💬<strong>Questions clients</strong><span>Répondre aux messages reçus.</span></button>
+    </div>
+   </div>
+   <div class="notice"><strong>Bon à savoir :</strong> les demandes d'achat ne sont pas des ventes payées. La validation des paiements et la livraison des comptes ne sont pas encore activées.</div>
+  </div>
+  <section class="view" id="view-listings" hidden>
+   <div class="viewHead"><div><h2>Gestion des annonces</h2><p>Ajoutez, modifiez ou retirez des comptes du catalogue.</p></div></div>
+   <div class="columns">
+    <div class="panel"><div class="panelHeading"><h2 id="formTitle">Nouvelle annonce</h2></div>
+     <form id="listingForm"><div class="grid">
+      <label>Jeu<input name="game" required placeholder="Clash of Clans"></label>
+      <label>Titre<input name="title" required placeholder="HDV 18 presque max"></label>
+      <label>Prix (€)<input name="price" type="number" min="0" step=".01" required></label>
+      <label>Image (URL ou fichier)<input name="image_url" placeholder="Hdv18.jpg"></label>
+     </div>
+     <label>Description<textarea name="description" rows="4" placeholder="Décrivez précisément le compte et ses caractéristiques…"></textarea></label>
+     <div class="checkLine"><label><input name="active" type="checkbox" checked> Annonce visible</label><label><input name="sold" type="checkbox"> Vendue</label></div>
+     <button type="submit" class="primary">Enregistrer l'annonce</button><button type="button" id="reset" class="secondary">Réinitialiser</button>
+     </form>
+    </div>
+    <div class="panel"><div class="panelHeading"><h2>Catalogue</h2><span class="sectionLabel">Vos comptes</span></div><div id="items">Chargement…</div></div>
+   </div>
+  </section>
+  <section class="view" id="view-orders" hidden>
+   <div class="viewHead"><div><h2>Demandes d'achat <span id="orderCount"></span></h2><p>Suivez les demandes et mettez à jour leur statut.</p></div></div>
+   <div class="notice" style="margin-bottom:16px">Aucun paiement n'est enregistré à partir de ces demandes.</div>
+   <div class="panel"><div id="ordersList">Chargement…</div></div>
+  </section>
+  <section class="view" id="view-tickets" hidden>
+   <div class="viewHead"><div><h2>Messages clients <span id="ticketCount"></span></h2><p>Répondez directement aux demandes des utilisateurs connectés.</p></div></div>
+   <div class="panel"><div id="ticketsList">Chargement…</div></div>
+  </section>
+  <section class="view" id="view-likes" hidden>
+   <div class="viewHead"><div><h2>Favoris clients</h2><p>Découvrez les annonces qui intéressent le plus vos visiteurs.</p></div></div>
+   <div class="panel"><div id="likesList">Chargement…</div></div>
+  </section>
+  <section class="view" id="view-notifications" hidden>
+   <div class="viewHead"><div><h2>Centre de notifications</h2><p>Suivez les nouveaux favoris, les questions et les demandes.</p></div></div>
+   <div class="panel" id="adminNotifications">Chargement…</div>
+  </section>
+ </main>
+</div>
+<script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const $=id=>document.getElementById(id),cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
 const {data:{user}}=await db.auth.getUser();
