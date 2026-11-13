@@ -1,0 +1,14 @@
+# IG Buy Now: static site served directly from repository root.
+# This avoids Netlify publishing a stale or empty build directory.
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
