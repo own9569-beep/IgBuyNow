@@ -11,7 +11,7 @@ button:active{transform:scale(.98)}header button{background:#ffffff12;color:#f6f
 main{max-width:1080px;margin:auto;padding:26px 18px 36px}.hero{background:linear-gradient(118deg,#102d52 5%,#1d4b80 65%,#2b5b91);border:1px solid #ffffff20;border-radius:16px;padding:36px 32px;color:#fff;margin-bottom:30px;box-shadow:var(--shadow)}
 .hero h1{margin:0 0 9px;font-size:clamp(26px,4vw,36px);letter-spacing:-.035em;font-weight:760}.hero p{line-height:1.6;color:#d6e4f5;margin:0 0 22px;max-width:510px}.hero button{background:#fff;color:#17375e;border-color:#fff;padding:12px 18px}
 main>h2{color:var(--ink);font-size:21px;font-weight:750;letter-spacing:-.02em;margin:0 0 17px}h2{font-size:22px}
-.listing{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,42%) minmax(0,58%)}
+.listing[hidden]{display:none}.listing{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,42%) minmax(0,58%)}
 .photo{min-height:275px;background:#d5dfeb;display:flex;align-items:center;justify-content:center;position:relative;color:white;text-align:center}.photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}.photo .placeholder{font-size:26px;font-weight:800}.pill{position:absolute;left:14px;top:14px;background:#fff;color:#1d4578;border-radius:7px;padding:6px 11px;font-size:12px;font-weight:750;box-shadow:0 2px 10px #10263a30}
 .content{padding:26px;display:flex;flex-direction:column;justify-content:center}.content h3{font-size:21px;line-height:1.35;letter-spacing:-.025em;margin:0 0 10px}.desc{color:var(--muted);line-height:1.65;margin:0 0 20px}
 .bottom{display:flex;align-items:center;gap:15px;justify-content:space-between;flex-wrap:wrap;margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}.price{font-size:29px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}.status{color:#25865f;font-size:13px;font-weight:700}.actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -19,20 +19,44 @@ main>h2{color:var(--ink);font-size:21px;font-weight:750;letter-spacing:-.02em;ma
 #chat{position:fixed;bottom:18px;right:18px;z-index:5;box-shadow:0 7px 25px #09294c33}#chatPanel{display:none;position:fixed;right:16px;bottom:78px;width:min(340px,calc(100vw - 32px));background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 12px 45px #0003;z-index:6}
 .notice{background:var(--surface);color:var(--muted);padding:13px 15px;border:1px solid var(--border);border-radius:10px;margin:15px 0;font-size:13px}a{color:var(--blue)}footer{text-align:center;color:var(--muted);padding:22px 15px 35px;font-size:13px}
 @media(max-width:680px){header{padding:17px 17px 19px}.brand{font-size:19px}.bar{margin:13px 0}.hero{padding:28px 22px;margin-bottom:26px}.hero h1{font-size:27px}.listing{display:block}.photo{height:215px;min-height:215px}.content{padding:20px}.content h3{font-size:20px}.bottom{gap:12px}.actions{width:100%}.actions button{flex:1}main{padding:20px 15px 26px}}
-</style></head><body><header><div class="brand">IG BY NOW</div><div class="bar"><button id="theme">🌙 Nuit</button><button id="account">👤 Compte</button></div><input id="search" class="search" placeholder="🔎 Rechercher une annonce..."></header><main><section class="hero"><h1>La marketplace des gamers</h1><p>Découvre nos annonces gaming et consulte les fiches détaillées.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><h2 id="annonces">🎮 Annonces</h2><article class="listing" id="listing"><div class="photo" id="photo"><span class="pill">HDV 18</span><img src="hdv18.jpg" alt="Aperçu de village HDV 18"></div><div class="content"><h3 id="title">Clash of Clans — HDV 18 presque max</h3><p class="desc" id="description">Village HDV 18 avec de nombreuses défenses et troupes améliorées. Consultez les photos et contactez-nous pour obtenir plus de renseignements.</p><div class="bottom"><div><div class="price" id="price">65,00 €</div><div class="status" id="status">● Disponible</div></div><div class="actions"><button id="details">Voir l'annonce</button><button class="primary" id="buy">Acheter</button></div></div></div></article><div class="notice">Annonce de démonstration. Aucun paiement réel n'est activé tant qu'un lien Stripe valide n'a pas été configuré.</div></main><footer>IG by Now • Aperçu public</footer><button id="chat" class="primary">💬 Assistance</button><div id="chatPanel"><b>Assistance IG by Now</b><p class="hint">Chat de démonstration, pas encore relié à une IA.</p><input id="chatInput" placeholder="Pose ta question..."><button id="chatSend">Envoyer</button><p id="chatReply"></p></div><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
+</style></head><body><header><div class="brand">IG BY NOW</div><div class="bar"><button id="theme">🌙 Nuit</button><button id="account">👤 Compte</button></div><input id="search" class="search" placeholder="🔎 Rechercher une annonce..."></header><main><section class="hero"><h1>La marketplace des gamers</h1><p>Découvre nos annonces gaming et consulte les fiches détaillées.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div class="notice">Les annonces sont gérées uniquement par l'administrateur via le dépôt GitHub. Paiement non activé.</div></main><footer>IG by Now • Aperçu public</footer><button id="chat" class="primary">💬 Assistance</button><div id="chatPanel"><b>Assistance IG by Now</b><p class="hint">Chat de démonstration, pas encore relié à une IA.</p><input id="chatInput" placeholder="Pose ta question..."><button id="chatSend">Envoyer</button><p id="chatReply"></p></div><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
 (function(){
  const $=id=>document.getElementById(id);
  const modal=$('modal');
- function show(content){$('modalContent').textContent='';$('modalContent').append(content);modal.classList.add('show')}
- function panel(title,body){let d=document.createElement('div');let h=document.createElement('h2');h.textContent=title;let p=document.createElement('p');p.textContent=body;d.append(h,p);return d}
+ let listings=[];
+ function show(title,body){$('modalContent').replaceChildren();let h=document.createElement('h2'),p=document.createElement('p');h.textContent=title;p.textContent=body;$('modalContent').append(h,p);modal.classList.add('show')}
  $('close').onclick=()=>modal.classList.remove('show');
  modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
- $('theme').onclick=()=>{document.body.classList.toggle('dark');$('theme').textContent=document.body.classList.contains('dark')?'☀️ Jour':'🌙 Nuit'};
- $('search').oninput=e=>{$('listing').hidden=!('clash of clans hdv 18 presque max village').includes(e.target.value.trim().toLowerCase())};
- $('account').onclick=()=>show(panel('Mon compte','La connexion Google sera activée après la mise en place de l’authentification sécurisée.'));
- $('details').onclick=()=>show(panel('Clash of Clans — HDV 18 presque max','Annonce illustrative à 65,00 €. La publication réelle et les commandes ne sont pas encore ouvertes.'));
- $('buy').onclick=()=>show(panel('Paiement bientôt disponible','Les paiements par carte et Apple Pay ne sont pas encore activés. Aucun débit ne peut être effectué.'));
+ $('theme').onclick=()=>{document.body.classList.toggle('dark');$('theme').textContent=document.body.classList.contains('dark')?'☀️ Jour':'🌙 Nuit';localStorage.setItem('ig-theme',document.body.classList.contains('dark')?'dark':'light')};
+ if(localStorage.getItem('ig-theme')==='dark')$('theme').click();
+ $('account').onclick=()=>show('Mon compte','La connexion sécurisée sera disponible à une prochaine étape.');
  $('chat').onclick=()=>{$('chatPanel').style.display=$('chatPanel').style.display==='block'?'none':'block'};
  $('chatSend').onclick=()=>{$('chatReply').textContent='Le service d’assistance sera activé prochainement.'};
+ function render(){
+   const grid=$('listingGrid');grid.replaceChildren();
+   const q=$('search').value.trim().toLocaleLowerCase('fr');
+   const visible=listings.filter(a=>a.active!==false && (a.title+' '+a.description+' '+a.game).toLocaleLowerCase('fr').includes(q));
+   if(!visible.length){let p=document.createElement('p');p.className='notice';p.textContent='Aucune annonce trouvée.';grid.append(p);return}
+   for(const a of visible){
+     const article=document.createElement('article');article.className='listing';
+     const photo=document.createElement('div');photo.className='photo';
+     const tag=document.createElement('span');tag.className='pill';tag.textContent=a.game||'Gaming';photo.append(tag);
+     if(a.image){const img=document.createElement('img');img.src=a.image;img.alt=a.title;img.loading='lazy';img.onerror=()=>{img.remove();const t=document.createElement('span');t.className='placeholder';t.textContent=a.game||'Gaming';photo.append(t)};photo.append(img)}
+     const content=document.createElement('div');content.className='content';
+     const h=document.createElement('h3');h.textContent=a.title;
+     const desc=document.createElement('p');desc.className='desc';desc.textContent=a.description;
+     const bottom=document.createElement('div');bottom.className='bottom';
+     const info=document.createElement('div'),price=document.createElement('div'),status=document.createElement('div');
+     price.className='price';price.textContent=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(a.price);
+     status.className='status';status.textContent=a.sold?'● Vendu':'● Disponible';if(a.sold)status.style.color='var(--muted)';
+     info.append(price,status);
+     const actions=document.createElement('div');actions.className='actions';
+     const detail=document.createElement('button');detail.textContent='Voir l’annonce';detail.onclick=()=>show(a.title,a.description);
+     const buy=document.createElement('button');buy.className='primary';buy.textContent=a.sold?'Indisponible':'Acheter';buy.disabled=!!a.sold;buy.onclick=()=>show('Paiement bientôt disponible','Les paiements ne sont pas encore activés. Aucun débit ne peut être effectué.');
+     actions.append(detail,buy);bottom.append(info,actions);content.append(h,desc,bottom);article.append(photo,content);grid.append(article);
+   }
+ }
+ $('search').oninput=render;
+ fetch('./data/listings.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Chargement impossible');return r.json()}).then(data=>{listings=Array.isArray(data)?data:[];render()}).catch(()=>{$('listingGrid').textContent='Les annonces sont temporairement indisponibles.'});
 })();
 </script></body></html>
