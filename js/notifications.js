@@ -35,12 +35,22 @@ admin.onclick=()=>location.href='./admin.html';
 db.auth.onAuthStateChange(()=>setTimeout(syncUser,0));
 await syncUser();
 setInterval(()=>{if(current)refresh()},30000);
+async function syncFavoriteIcons(){
+ if(!current)return;
+ const buttons=[...document.querySelectorAll('.favoriteIcon[data-listing-id]')];
+ if(!buttons.length)return;
+ const {data,error}=await db.from('listing_likes').select('listing_id').eq('user_id',current.id);
+ if(error)return;
+ const ids=new Set((data||[]).map(x=>x.listing_id));
+ for(const b of buttons){const liked=ids.has(b.dataset.listingId);b.textContent=liked?'♥':'♡';b.setAttribute('aria-pressed',String(liked));b.title=liked?'Retirer des favoris':'Ajouter aux favoris';b.setAttribute('aria-label',b.title)}
+}
+document.addEventListener('igbn:listings-rendered',syncFavoriteIcons);
 window.igbnLike=async (listingId,button)=>{
  const {data:{user}}=await db.auth.getUser();if(!user){document.getElementById('account')?.click();return}
  const {data:existing}=await db.from('listing_likes').select('listing_id').eq('listing_id',listingId).eq('user_id',user.id).maybeSingle();
  const {error}=existing?await db.from('listing_likes').delete().eq('listing_id',listingId).eq('user_id',user.id):await db.from('listing_likes').insert({listing_id:listingId,user_id:user.id});
  if(error){alert('Impossible de modifier les favoris : '+error.message);return}
- button.textContent=existing?'♡ Favoris':'♥ Aimé';button.setAttribute('aria-pressed',String(!existing));
+ button.textContent=existing?'♡':'♥';button.title=existing?'Ajouter aux favoris':'Retirer des favoris';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(!existing));
 };
 window.igbnRequest=async listingId=>{
  const {data:{user}}=await db.auth.getUser();if(!user){document.getElementById('account')?.click();return}
