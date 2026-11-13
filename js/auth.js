@@ -18,6 +18,8 @@ function draw(){
  wrap.append(title,sub);
  if(!client){wrap.append(make('p','auth-notice','Service de connexion temporairement indisponible.'));area.append(wrap);return}
  if(user){
+  const {data:membership}=await client.from('admin_members').select('user_id').eq('user_id',user.id).maybeSingle();
+  if(membership){wrap.append(make('p','auth-notice','Mode administrateur activé.'));const admin=button('Ouvrir mon espace administrateur','auth-submit',()=>location.href='./admin.html');wrap.append(admin)}
   const card=make('div','auth-user');card.append(make('span','auth-avatar','👤'),make('span','',user.email||'Compte connecté'));wrap.append(card);
   wrap.append(button('Se déconnecter','auth-submit',async()=>{const {error}=await client.auth.signOut();if(error)notice(error.message,true);else{user=null;refresh();draw()}}));
   const n=make('p','auth-notice');n.id='authNotice';n.hidden=true;wrap.append(n);area.append(wrap);return;
