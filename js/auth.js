@@ -62,9 +62,17 @@ async function draw(){
 function refresh(){account.textContent=user?'👤 '+(user.email?.split('@')[0]||'Mon compte'):'👤 Connexion / Inscription'}
 account.onclick=()=>{draw();modal.classList.add('show')};
 if(client){
+ const params=new URLSearchParams(location.search);
+ if(params.has('error')){
+   modal.classList.add('show');
+   await draw();
+   notice(params.get('error_description')||'Connexion Google indisponible : vérifie son activation dans Supabase.',true);
+   history.replaceState({},'',location.pathname);
+ }
  try{const {data}=await client.auth.getUser();user=data.user;refresh()}catch(e){console.warn('Session indisponible',e)}
  client.auth.onAuthStateChange((event,session)=>{
   user=session?.user||null;refresh();
+  if(event==='SIGNED_IN' && modal.classList.contains('show') && $('authNotice'))notice('Connexion Google réussie.');
   if(event==='PASSWORD_RECOVERY'){
    area.replaceChildren();const wrap=make('div','auth-wrap');wrap.append(make('h2','auth-title','Nouveau mot de passe'));
    const form=make('form','auth-form'),field=input('Nouveau mot de passe','password','new-password'),submit=make('button','auth-submit','Enregistrer');submit.type='submit';form.append(field.box,submit);
