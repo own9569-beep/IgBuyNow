@@ -19,6 +19,40 @@ main>h2{color:var(--ink);font-size:21px;font-weight:750;letter-spacing:-.02em;ma
 #chat{position:fixed;bottom:18px;right:18px;z-index:5;box-shadow:0 7px 25px #09294c33}#chatPanel{display:none;position:fixed;right:16px;bottom:78px;width:min(340px,calc(100vw - 32px));background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 12px 45px #0003;z-index:6}
 .notice{background:var(--surface);color:var(--muted);padding:13px 15px;border:1px solid var(--border);border-radius:10px;margin:15px 0;font-size:13px}a{color:var(--blue)}footer{text-align:center;color:var(--muted);padding:22px 15px 35px;font-size:13px}
 @media(max-width:680px){header{padding:17px 17px 19px}.brand{font-size:19px}.bar{margin:13px 0}.hero{padding:28px 22px;margin-bottom:26px}.hero h1{font-size:27px}.listing{display:block}.photo{height:215px;min-height:215px}.content{padding:20px}.content h3{font-size:20px}.bottom{gap:12px}.actions{width:100%}.actions button{flex:1}main{padding:20px 15px 26px}}
+
+/* Modern account dialog */
+.modal{background:rgba(5,15,34,.72);backdrop-filter:blur(7px);z-index:30}
+.modal .panel{position:relative;max-width:445px;margin:min(9vh,65px) auto;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:24px;box-shadow:0 28px 85px #020a1c65}
+.modal .close{position:absolute;top:16px;right:16px;float:none;z-index:2;width:36px;height:36px;padding:0;border-radius:50%;font-size:18px;background:var(--surface)}
+.auth-wrap{padding:34px 33px 28px;text-align:center}
+.auth-mark{display:grid;place-items:center;width:56px;height:56px;margin:0 auto 12px;border-radius:17px;background:linear-gradient(145deg,#183b73,#377bd4);color:white;font-size:20px;font-weight:850;box-shadow:0 10px 25px #285c9d40}
+.auth-eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted)}
+.auth-title{margin:12px 0 6px;font-size:25px;line-height:1.2;letter-spacing:-.04em}
+.auth-subtitle{margin:0 0 23px;color:var(--muted);font-size:13px;line-height:1.55}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin:0 0 21px;gap:4px}
+.auth-tab{border:0;background:transparent;color:var(--muted);padding:11px 5px;border-radius:9px}
+.auth-tab.active{background:var(--card);color:var(--ink);box-shadow:0 2px 9px #0b23401a}
+.auth-form{text-align:left}
+.auth-field{display:block;margin:0 0 15px}
+.auth-field span{display:block;margin-bottom:7px;font-size:13px;font-weight:700}
+.auth-input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:11px;background:var(--surface);font-size:15px}
+.auth-help{text-align:right;margin:-5px 0 15px}
+.auth-link,.auth-back{border:0;background:transparent;color:var(--blue);padding:3px;font-size:12px;font-weight:700}
+.auth-submit{width:100%;border:0;border-radius:11px;background:#21549a;color:#fff;padding:14px;font-size:14px;font-weight:750;box-shadow:0 6px 16px #17478428}
+.auth-submit:hover{background:#1a467f}
+.auth-submit:disabled{opacity:.65;cursor:wait}
+.auth-divider{display:flex;align-items:center;gap:13px;margin:19px 0;color:var(--muted);font-size:12px}
+.auth-divider:before,.auth-divider:after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-google{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--card);border:1px solid var(--border);padding:12px;border-radius:11px}
+.auth-google-icon{font-size:20px;font-weight:900;color:#4285f4}
+.auth-notice{padding:11px 12px;border-radius:10px;background:var(--surface);color:var(--ink);font-size:12px;line-height:1.5;text-align:left;margin:15px 0 0}
+.auth-notice.error{color:#b91c1c;background:#feecec}
+.auth-notice[hidden]{display:none}
+.auth-back{margin-top:15px}
+.auth-legal{font-size:11px;color:var(--muted);margin:20px 0 0}
+.auth-user{display:flex;align-items:center;gap:10px;overflow-wrap:anywhere;background:var(--surface);padding:15px;border-radius:12px;margin-bottom:18px;text-align:left}
+.auth-avatar{font-size:23px}
+@media(max-width:480px){.modal{padding:12px}.modal .panel{margin:6vh auto;border-radius:20px}.auth-wrap{padding:29px 22px 25px}.auth-title{font-size:23px}}
 </style></head><body><header><div class="brand">IG BY NOW</div><div class="bar"><button id="theme">🌙 Nuit</button><button id="account">👤 Compte</button></div><input id="search" class="search" placeholder="🔎 Rechercher une annonce..."></header><main><section class="hero"><h1>La marketplace des gamers</h1><p>Découvre nos annonces gaming et consulte les fiches détaillées.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div class="notice">Les annonces sont gérées uniquement par l'administrateur via le dépôt GitHub. Paiement non activé.</div></main><footer>IG by Now • Aperçu public</footer><button id="chat" class="primary">💬 Assistance</button><div id="chatPanel"><b>Assistance IG by Now</b><p class="hint">Chat de démonstration, pas encore relié à une IA.</p><input id="chatInput" placeholder="Pose ta question..."><button id="chatSend">Envoyer</button><p id="chatReply"></p></div><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
 (function(){
  const $=id=>document.getElementById(id);
