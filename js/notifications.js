@@ -12,7 +12,7 @@ async function syncUser(){
  if(!current){admin.hidden=true;count.hidden=true;pop.hidden=true;return}
  const {data:membership}=await db.from('admin_members').select('user_id').eq('user_id',current.id).maybeSingle();
  isAdmin=!!membership;admin.hidden=!isAdmin;
- await refresh();
+ await refresh();await syncFavoriteIcons();
 }
 async function refresh(){
  if(!current)return;
