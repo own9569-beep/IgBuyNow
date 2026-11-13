@@ -9,7 +9,7 @@ function button(text,cls,fn){const b=make('button',cls,text);b.type='button';b.o
 function notice(text,bad=false){const n=$('authNotice');if(n){n.textContent=text;n.className='auth-notice'+(bad?' error':'');n.hidden=false}}
 function setMode(m){mode=m;draw()}
 function input(label,type,autocomplete){const box=make('label','auth-field');const name=make('span','',label);const i=make('input','auth-input');i.type=type;i.required=true;i.autocomplete=autocomplete;i.placeholder=label;if(type==='password')i.minLength=8;box.append(name,i);return {box,i}}
-function draw(){
+async function draw(){
  area.replaceChildren();
  const wrap=make('div','auth-wrap');
  wrap.append(make('div','auth-mark','IG'),make('div','auth-eyebrow','IG BUY NOW'));
