@@ -60,6 +60,24 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
 @media(max-width:1120px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){#dashboard{display:block}.side{height:auto;position:relative;padding:15px 15px 11px;gap:12px}.brand{font-size:18px}.brandHint{font-size:10px;margin-top:4px}.nav{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav-link{white-space:nowrap;width:auto;padding:11px 13px;font-size:12px;flex:none}.sideFooter{display:none}.workspace{padding:20px 13px 65px}.topbar{margin-bottom:17px}.panel{padding:17px;border-radius:14px}.kpis{gap:10px;margin:16px 0}.kpi{padding:15px;border-radius:13px}.kpi-icon{width:36px;height:36px;font-size:17px;margin-bottom:12px}.quick{grid-template-columns:1fr 1fr;gap:9px}.quick button{min-height:90px;padding:13px}.grid{grid-template-columns:1fr}.viewHead h1{font-size:23px}}
 @media(max-width:380px){.quick{grid-template-columns:1fr}.topbar{flex-wrap:wrap}.kpi{padding:12px}}
+
+/* Private user moderation */
+.userToolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 18px}
+.userToolbar input{flex:1;min-width:180px;padding:12px 14px;border:1px solid #d5dfec;border-radius:11px;font:inherit}
+.userRow{padding:18px;border:1px solid #e2e9f3;background:#fbfdff;border-radius:15px;margin-bottom:11px}
+.userHeader{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
+.userMain{display:flex;gap:12px;align-items:center;min-width:0}
+.userAvatar{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:14px;background:#e4efff;color:#1854a5;font-size:17px;font-weight:850}
+.userEmail{font-weight:800;font-size:14px;overflow-wrap:anywhere}
+.userDate{color:#8091aa;font-size:11px;margin-top:4px}
+.userBadges{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:10px 0}
+.userTag{font-size:10px;font-weight:800;border-radius:7px;padding:5px 8px;background:#eaf3ff;color:#27598e}
+.userTag.warn{background:#fff3e6;color:#a46411}.userTag.bad{background:#ffeaec;color:#b42e48}.userTag.ok{background:#e8f8f0;color:#16835a}
+.userActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.userActions button{font-size:12px;padding:9px 11px;margin:0}
+.userPager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:15px}.userPager button{padding:9px 12px}.userPager small{color:#7c8ba2}
+#userFeedback{margin:6px 0 15px;font-size:13px;line-height:1.5;color:#537397}
+@media(max-width:540px){.userRow{padding:13px}.userHeader{display:block}.userActions button{flex:1}.userToolbar input{min-width:100%;font-size:16px}}
 </style></head>
 <body>
 <div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="gateMessage">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
@@ -72,6 +90,7 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
    <button type="button" class="nav-link" data-view="orders">🛒 &nbsp; Demandes</button>
    <button type="button" class="nav-link" data-view="tickets">✉️ &nbsp; Messages</button>
    <button type="button" class="nav-link" data-view="likes">❤️ &nbsp; Favoris</button>
+   <button type="button" class="nav-link" data-view="users">👥 &nbsp; Utilisateurs</button>
    <button type="button" class="nav-link" data-view="notifications">🔔 &nbsp; Notifications</button>
   </nav>
   <div class="sideFooter"><a href="./">← Retour à la boutique</a><small>Administration privée · IG Buy Now<br>Paiements désactivés</small></div>
@@ -92,6 +111,7 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
      <button type="button" data-view="listings">➕<strong>Gérer les annonces</strong><span>Créer, modifier ou masquer un compte.</span></button>
      <button type="button" data-view="orders">🛒<strong>Demandes d'achat</strong><span>Suivre les intentions d'achat.</span></button>
      <button type="button" data-view="tickets">💬<strong>Questions clients</strong><span>Répondre aux messages reçus.</span></button>
+     <button type="button" data-view="users">👥<strong>Gérer les utilisateurs</strong><span>Bannir, supprimer ou bloquer les demandes d’achat.</span></button>
     </div>
    </div>
    <div class="notice"><strong>Bon à savoir :</strong> les demandes d'achat ne sont pas des ventes payées. La validation des paiements et la livraison des comptes ne sont pas encore activées.</div>
@@ -127,6 +147,16 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
    <div class="viewHead"><div><h2>Favoris clients</h2><p>Découvrez les annonces qui intéressent le plus vos visiteurs.</p></div></div>
    <div class="panel"><div id="likesList">Chargement…</div></div>
   </section>
+  <section class="view" id="view-users" hidden>
+ <div class="viewHead"><div><h2>Gestion des utilisateurs</h2><p>Modérez les comptes, leur accès et leurs demandes d'achat.</p></div></div>
+ <div class="notice" style="margin-bottom:15px"><strong>Actions sensibles :</strong> bloquer les achats empêche les nouvelles demandes d'achat. Bannir empêche les nouvelles connexions Google et les actions privées principales. Supprimer efface définitivement le compte et ses données associées. Les comptes administrateurs sont protégés.</div>
+ <div class="panel"><div class="panelHeading"><h2>Comptes clients</h2><button type="button" class="secondary" id="usersRefresh">⟳ Actualiser</button></div>
+  <div class="userToolbar"><input type="search" id="userSearch" placeholder="Rechercher une adresse e-mail sur cette page…" aria-label="Rechercher un utilisateur"></div>
+  <p id="userFeedback" role="status">Chargement des comptes…</p>
+  <div id="usersList"></div>
+  <div class="userPager"><button type="button" class="secondary" id="usersPrev">← Précédent</button><small id="usersPage">Page 1</small><button type="button" class="secondary" id="usersNext">Suivant →</button></div>
+ </div>
+</section>
   <section class="view" id="view-notifications" hidden>
    <div class="viewHead"><div><h2>Centre de notifications</h2><p>Suivez les nouveaux favoris, les questions et les demandes.</p></div></div>
    <div class="panel" id="adminNotifications">Chargement…</div>
@@ -136,8 +166,8 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
 <script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const $=id=>document.getElementById(id),cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
-const viewNames=['overview','listings','orders','tickets','likes','notifications'];
-const names={overview:"Vue d'ensemble",listings:"Gestion des annonces",orders:"Demandes d'achat",tickets:"Messages clients",likes:"Favoris clients",notifications:"Notifications"};
+const viewNames=['overview','listings','orders','tickets','likes','users','notifications'];
+const names={overview:"Vue d'ensemble",listings:"Gestion des annonces",orders:"Demandes d'achat",tickets:"Messages clients",likes:"Favoris clients",users:"Gestion des utilisateurs",notifications:"Notifications"};
 function showView(view){
  if(!viewNames.includes(view))view='overview';
  for(const name of viewNames)document.getElementById('view-'+name).hidden=name!==view;
@@ -153,8 +183,96 @@ async function updateOverview(){
  const results=await Promise.all(tables);
  ['statListings','statOrders','statTickets','statLikes'].forEach((name,i)=>$(name).textContent=results[i].error?'—':String(results[i].count??0));
 }
-async function reloadAll(){await Promise.all([load(),loadTickets(),loadOrders(),loadLikes(),loadNotifications(),updateOverview()])}
+async function reloadAll(){await Promise.all([load(),loadTickets(),loadOrders(),loadLikes(),loadNotifications(),updateOverview(),loadUsers(userPage)])}
 $('refreshData').onclick=reloadAll;
+
+let userPage=1;
+let userRows=[];
+let userHasMore=false;
+const makeNode=(tag,value,klass)=>{const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);if(klass)e.className=klass;return e};
+async function manageUserApi(payload){
+ const {data:{session},error:sessionError}=await db.auth.getSession();
+ if(sessionError||!session?.access_token)throw Error('Reconnectez-vous pour continuer.');
+ const response=await fetch(cfg.supabaseUrl+'/functions/v1/manage-users',{
+  method:'POST',
+  headers:{'Content-Type':'application/json',apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+session.access_token},
+  body:JSON.stringify(payload)
+ });
+ const body=await response.json().catch(()=>({}));
+ if(!response.ok)throw Error(body.error||'Le serveur ne peut pas effectuer cette action.');
+ return body;
+}
+function renderUsers(){
+ const box=$('usersList');box.replaceChildren();
+ const q=$('userSearch').value.trim().toLowerCase();
+ const matching=userRows.filter(u=>(u.email||'').toLowerCase().includes(q));
+ if(!matching.length){box.append(makeNode('p',q?'Aucun compte ne correspond à cette recherche sur cette page.':'Aucun compte sur cette page.','emptyState'))}
+ for(const u of matching){
+  const row=makeNode('article',undefined,'userRow');
+  const head=makeNode('div',undefined,'userHeader');
+  const main=makeNode('div',undefined,'userMain');
+  const avatar=makeNode('span',(u.email?.[0]||'?').toUpperCase(),'userAvatar');
+  const info=makeNode('div');
+  info.append(makeNode('div',u.email||'E-mail non disponible','userEmail'),makeNode('div','Inscrit le '+new Date(u.created_at).toLocaleDateString('fr-FR'),'userDate'));
+  main.append(avatar,info);head.append(main);row.append(head);
+  const badges=makeNode('div',undefined,'userBadges');
+  const makeBadge=(txt,cls)=>badges.append(makeNode('span',txt,'userTag '+cls));
+  if(u.is_admin)makeBadge('Administrateur','warn');
+  else if(u.banned)makeBadge('Compte banni','bad');
+  else makeBadge('Compte actif','ok');
+  if(u.purchase_blocked)makeBadge('Demandes d’achat bloquées','warn');
+  if(u.reason)row.append(makeNode('p','Motif : '+u.reason,'muted'));
+  row.append(badges);
+  if(!u.is_admin&&!u.is_self){
+   const actions=makeNode('div',undefined,'userActions');
+   const block=makeNode('button',u.purchase_blocked?'✓ Autoriser les demandes':'⛔ Bloquer les demandes','secondary');
+   const ban=makeNode('button',u.banned?'↩ Débannir':'🚫 Bannir','secondary');
+   const del=makeNode('button','🗑 Supprimer le compte','danger');
+   block.type=ban.type=del.type='button';
+   block.onclick=()=>executeUserAction(u,u.purchase_blocked?'unblock_purchase':'block_purchase');
+   ban.onclick=()=>executeUserAction(u,u.banned?'unban':'ban');
+   del.onclick=()=>executeUserAction(u,'delete');
+   actions.append(block,ban,del);row.append(actions);
+  }else{row.append(makeNode('small','Compte administrateur protégé : modification interdite.','userDate'))}
+  box.append(row);
+ }
+ $('usersPage').textContent='Page '+userPage;
+ $('usersPrev').disabled=userPage===1;
+ $('usersNext').disabled=!userHasMore;
+}
+async function loadUsers(page=1){
+ $('userFeedback').textContent='Chargement des comptes…';
+ try{
+  const data=await manageUserApi({action:'list',page});
+  userRows=data.users||[];userPage=data.page||page;userHasMore=!!data.has_more;
+  $('userFeedback').textContent=userRows.length+' compte(s) sur cette page. Recherche limitée aux résultats affichés.';
+  renderUsers();
+ }catch(e){$('userFeedback').textContent='Erreur : '+(e.message||'Chargement impossible')}
+}
+async function executeUserAction(u,action){
+ const label={block_purchase:'bloquer les demandes d’achat',unblock_purchase:'autoriser à nouveau les demandes d’achat',ban:'bannir ce compte',unban:'débannir ce compte',delete:'SUPPRIMER DÉFINITIVEMENT ce compte'}[action];
+ if(!label)return;
+ let confirmation='';
+ if(action==='delete'){
+  confirmation=prompt('Suppression irréversible de '+u.email+'. Les demandes, messages et favoris associés peuvent être supprimés. Tapez EXACTEMENT son adresse e-mail pour confirmer :');
+  if(confirmation===null||confirmation.trim().toLowerCase()!==u.email.toLowerCase()){alert('Suppression annulée.');return}
+ }
+ if(!confirm('Confirmez-vous : '+label+' ?\nUtilisateur : '+u.email))return;
+ let reason='';
+ if(action==='ban'||action==='block_purchase'){const v=prompt('Motif de la restriction (facultatif) :','');if(v===null)return;reason=v.trim()}
+ $('userFeedback').textContent='Modification en cours…';
+ try{
+  const res=await manageUserApi({action,user_id:u.id,confirm:confirmation,reason});
+  $('userFeedback').textContent=res.message||'Modification enregistrée.';
+  await loadUsers(userPage);
+  $('status').textContent=res.message||'Modification enregistrée.';
+ }catch(e){$('userFeedback').textContent='Échec : '+(e.message||'Action impossible')}
+}
+$('usersRefresh').onclick=()=>loadUsers(userPage);
+$('usersPrev').onclick=()=>{if(userPage>1)loadUsers(userPage-1)};
+$('usersNext').onclick=()=>{if(userHasMore)loadUsers(userPage+1)};
+$('userSearch').oninput=renderUsers;
+
 const {data:{user}}=await db.auth.getUser();
 if(!user){$('gateMessage').textContent='Connecte-toi d’abord depuis la boutique pour accéder à l’administration.'}
 else{
