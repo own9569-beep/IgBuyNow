@@ -54,12 +54,38 @@ window.igbnLike=async (listingId,button)=>{
  button.textContent=existing?'♡':'♥';button.title=existing?'Ajouter aux favoris':'Retirer des favoris';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(!existing));
 };
 window.igbnRequest=async listingId=>{
- const {data:{user}}=await db.auth.getUser();if(!user){document.getElementById('account')?.click();return}
+ const {data:{user}}=await db.auth.getUser();
+ if(!user){document.getElementById('account')?.click();return}
  const {data:controls,error:controlsError}=await db.from('account_controls').select('purchase_blocked,banned').eq('user_id',user.id).maybeSingle();
  if(controlsError){alert('Impossible de vérifier votre compte pour le moment.');return}
- if(controls?.banned||controls?.purchase_blocked){alert('Votre compte n’est pas autorisé à envoyer de nouvelles demandes d’achat. Contactez le support si vous pensez qu’il s’agit d’une erreur.');return}
- const message=prompt('Votre question ou demande concernant ce compte (aucun paiement demandé) :','Bonjour, je souhaite des renseignements sur ce compte.');
- if(message===null)return;
- const {error}=await db.from('order_requests').insert({user_id:user.id,listing_id:listingId,message:message.trim().slice(0,1000)});
- alert(error?'Demande non enregistrée : '+error.message:'Votre demande a été envoyée au vendeur. Aucun paiement n’a été effectué.');
+ if(controls?.banned||controls?.purchase_blocked){alert('Votre compte n’est pas autorisé à envoyer de nouvelles demandes d’achat. Contactez notre assistance.');return}
+ const {data:listing,error:listingError}=await db.from('listings').select('id,title,offer_type,discount_percent,active,sold').eq('id',listingId).maybeSingle();
+ if(listingError||!listing||!listing.active||listing.sold){alert('Cette offre n’est plus disponible.');return}
+ const modal=document.getElementById('modal'),box=document.getElementById('modalContent');
+ if(!modal||!box)return;
+ const root=safe('div','');root.className='requestForm';
+ root.append(safe('h2','Demander un compte'),safe('p',listing.title+' · Remise de '+(listing.discount_percent||0)+' % sur le devis confirmé.'));
+ const info=safe('p',listing.offer_type==='random'
+  ?'Indiquez vos préférences. Pour une offre aléatoire, la catégorie sera confirmée avant tout paiement.'
+  :'Précisez les niveaux de héros, skins, équipements, niveau de village et tous les éléments que vous voulez retrouver sur ce compte.');
+ root.append(info);
+ const form=document.createElement('form'),label=safe('label','Votre demande détaillée');
+ const input=document.createElement('textarea');
+ input.required=true;input.minLength=15;input.maxLength=2000;input.rows=6;
+ input.placeholder='Exemple : je cherche un HDV '+(listing.title.match(/HDV \d+/)?.[0]?.replace('HDV ','')||'')+' avec héros améliorés, équipements, skins particuliers, budget maximum et caractéristiques souhaitées…';
+ label.append(input);form.append(label);
+ const disclaimer=safe('p','Aucun paiement n’est effectué. Nous confirmerons la disponibilité et le prix définitif avant toute commande.');disclaimer.className='muted';form.append(disclaimer);
+ const submit=safe('button','Envoyer ma demande');submit.type='submit';form.append(submit);
+ const message=safe('p','');message.setAttribute('role','status');form.append(message);
+ form.onsubmit=async e=>{
+  e.preventDefault();const value=input.value.trim();
+  if(value.length<15){message.textContent='Merci de détailler davantage votre demande.';return}
+  submit.disabled=true;submit.textContent='Envoi en cours…';
+  const {error}=await db.from('order_requests').insert({user_id:user.id,listing_id:listingId,message:value});
+  if(error){message.textContent='Impossible d’envoyer votre demande : '+error.message;submit.disabled=false;submit.textContent='Réessayer';return}
+  message.textContent='✅ Demande reçue. Elle apparaît dans « Mes demandes ». Aucun paiement effectué.';
+  input.disabled=true;submit.textContent='Demande envoyée';
+  const link=safe('a','Suivre ma demande');link.href='./mes-demandes.html';link.style.display='block';link.style.marginTop='12px';root.append(link);
+ };
+ root.append(form);box.replaceChildren(root);modal.classList.add('show');input.focus();
 };
