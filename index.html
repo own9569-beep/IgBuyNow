@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IG by Now — Marketplace Gaming</title><meta name="description" content="IG by Now, marketplace gaming : découvrez nos annonces et offres."><style>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IG Buy Now — Comptes gaming</title><meta name="description" content="IG by Now, marketplace gaming : découvrez nos annonces et offres."><style>
 :root{--bg:#edf2f8;--card:#ffffff;--ink:#16243a;--muted:#65748a;--blue:#153e78;--border:#dce4ee;--header:#102b50;--surface:#f4f7fb;--shadow:0 12px 38px rgba(18,43,76,.075)}
 body.dark{--bg:#0b1728;--card:#14243a;--ink:#f1f5fc;--muted:#a8b7cb;--blue:#8ab8f6;--border:#2b405c;--header:#081424;--surface:#1a2e49;--shadow:0 12px 38px rgba(0,0,0,.2)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.5;transition:background .2s,color .2s}
@@ -67,7 +67,35 @@ header{background:linear-gradient(125deg,#061a3a,#0e3e83 75%,#175bb0);border-bot
 .auth-google{border:2px solid #bfd5f4;background:#f5f9ff;color:#113b75}
 .auth-field span{color:var(--ink)}
 body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
-</style></head><body><header><div class="brand">IG BY NOW</div><div class="bar"><button id="theme">🌙 Nuit</button><button id="account">👤 Compte</button></div><input id="search" class="search" placeholder="🔎 Rechercher une annonce..."></header><main><section class="hero"><h1>La marketplace des gamers</h1><p>Découvre nos annonces gaming et consulte les fiches détaillées.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div class="notice">Les annonces sont publiées par IG Buy Now. Paiement non activé.</div></main><footer>IG by Now • Aperçu public</footer><button id="chat" class="primary">💬 Assistance</button><div id="chatPanel"><b>Assistance IG by Now</b><p class="hint">Chat de démonstration, pas encore relié à une IA.</p><input id="chatInput" placeholder="Pose ta question..."><button id="chatSend">Envoyer</button><p id="chatReply"></p></div><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
+
+/* Adaptive desktop and mobile storefront */
+html{min-width:320px;scroll-padding-top:20px}body{overflow-x:hidden}button,input,textarea,select{max-width:100%}
+header{padding-top:17px;padding-bottom:18px}.headerTop{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0}
+.brand{text-decoration:none;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:22px;letter-spacing:.035em}
+.brand span{color:#8ec5ff}.bar{margin:0;flex-wrap:wrap;justify-content:flex-end}
+.siteNav{display:flex;align-items:center;gap:8px;margin:17px 0 16px}
+.siteNav a{display:inline-flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;color:#e6f1ff;font-size:13px;font-weight:750;padding:9px 15px;border-radius:10px;border:1px solid #ffffff25;background:#ffffff12;min-height:42px}
+.siteNav a:hover{background:#ffffff25}.searchWrap{max-width:670px}.searchWrap label{display:block;color:#b9d5f5;font-size:12px;font-weight:700;margin-bottom:6px}
+.search{font-size:16px;min-height:48px}.hero{padding:42px 40px}.heroBadge{font-size:11px;font-weight:800;letter-spacing:.15em;color:#b7d9ff;margin-bottom:12px}
+.hero h1{max-width:670px;font-size:clamp(29px,4.2vw,44px);line-height:1.15}.hero p{max-width:610px}
+#listingGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px}
+.listing{display:flex;flex-direction:column;margin:0;min-width:0}.photo{min-height:245px;height:245px;flex-shrink:0}.content{padding:22px;flex:1;min-width:0}
+.content h3,.desc{overflow-wrap:anywhere}.content h3{font-size:20px}.desc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bottom{align-items:flex-end}.actions button{min-height:43px}.notice{line-height:1.7}footer{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;border-top:1px solid var(--border);padding:28px 18px 38px}footer strong{color:var(--ink)}
+@media(min-width:1100px){#listingGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){
+ header{padding:13px 14px 17px}.headerTop{gap:8px}.brand{font-size:18px}.brand span{font-size:17px}.bar{gap:5px}.bar button{font-size:12px;padding:9px 10px;min-height:40px}
+ .siteNav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:13px 0}.siteNav a{font-size:11px;padding:9px 3px;white-space:nowrap}
+ .searchWrap label{font-size:11px}.search{width:100%;min-height:47px}
+ main{padding:16px 13px 32px}.hero{padding:28px 22px;border-radius:15px;margin-bottom:23px}.hero h1{font-size:clamp(27px,7vw,34px);line-height:1.15}.hero p{font-size:14px}
+ #listingGrid{grid-template-columns:minmax(0,1fr);gap:15px}.listing{border-radius:15px}.photo{height:205px;min-height:205px}.content{padding:18px}.content h3{font-size:19px}
+ .bottom{display:grid;grid-template-columns:1fr;align-items:start;gap:12px}.actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}.actions button{width:100%;padding:11px 7px;font-size:12px}
+ .price{font-size:25px}.modal{padding:9px}.modal .panel{width:100%;max-width:445px;margin:5vh auto}
+ footer{display:flex;flex-direction:column;gap:6px;padding-bottom:95px}
+}
+@media(max-width:370px){.brand{font-size:16px}.brand span{font-size:15px}.bar button{font-size:11px;padding:8px}.siteNav a{font-size:10px}.hero{padding:23px 17px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style></head><body><header><div class="headerTop"><a class="brand" href="./" aria-label="IG Buy Now, accueil">IG <span>BUY NOW</span></a><div class="bar"><button id="theme" type="button">🌙 Nuit</button><button id="account" type="button">👤 Compte</button></div></div><nav class="siteNav" aria-label="Navigation principale"><a href="#annonces">🎮 Annonces</a><a href="./checkout.html">🛒 Commander</a><a href="#supportInfo" id="navSupport">💬 Assistance</a></nav><div class="searchWrap"><label for="search">Rechercher un compte gaming</label><input id="search" class="search" type="search" placeholder="🔎 Jeu, niveau, description…" autocomplete="off"></div></header><main><section class="hero"><div class="heroBadge">🎮 COMPTES GAMING</div><h1>Ton prochain compte gaming commence ici.</h1><p>Explore les annonces disponibles, consulte les détails et échange avec notre assistance avant de te décider.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div class="notice" id="supportInfo"><strong>Besoin d’un conseil ?</strong> Notre assistance est disponible depuis le bouton en bas de l’écran. Les annonces sont publiées uniquement par IG Buy Now. Le paiement n’est pas encore activé.</div></main><footer><strong>IG BUY NOW</strong><span>Marketplace gaming · Paiements en préparation</span><a href="#annonces">Voir les annonces</a></footer><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
 (function(){
  const $=id=>document.getElementById(id);
  const modal=$('modal');
@@ -78,8 +106,6 @@ body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
  $('theme').onclick=()=>{document.body.classList.toggle('dark');$('theme').textContent=document.body.classList.contains('dark')?'☀️ Jour':'🌙 Nuit';localStorage.setItem('ig-theme',document.body.classList.contains('dark')?'dark':'light')};
  if(localStorage.getItem('ig-theme')==='dark')$('theme').click();
 
- $('chat').onclick=()=>{$('chatPanel').style.display=$('chatPanel').style.display==='block'?'none':'block'};
- $('chatSend').onclick=()=>{$('chatReply').textContent='Le service d’assistance sera activé prochainement.'};
  function render(){
    const grid=$('listingGrid');grid.replaceChildren();
    const q=$('search').value.trim().toLocaleLowerCase('fr');
@@ -105,6 +131,7 @@ body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
    }
  }
  $('search').oninput=render;
+ const navSupport=$('navSupport');if(navSupport)navSupport.onclick=e=>{e.preventDefault();document.getElementById('supportLaunch')?.click()};
  fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json()).then(async cfg=>{const url=cfg.supabaseUrl+'/rest/v1/listings?select=*&active=eq.true&order=created_at.desc';const r=await fetch(url,{headers:{apikey:cfg.supabaseAnonKey}});if(!r.ok)throw Error('Chargement impossible');return r.json()}).then(data=>{listings=(Array.isArray(data)?data:[]).map(a=>({...a,image:a.image_url}));render()}).catch(()=>{$('listingGrid').textContent='Les annonces sont temporairement indisponibles.'});
 })();
 </script><script type="module" src="./js/auth.js"></script><script type="module" src="./js/support.js"></script></body></html>
