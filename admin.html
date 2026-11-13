@@ -161,7 +161,8 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
      <form id="listingForm"><div class="grid">
       <label>Jeu<input name="game" required placeholder="Clash of Clans"></label>
       <label>Titre<input name="title" required placeholder="HDV 18 presque max"></label>
-      <label>Prix (€) — 0 pour « sur devis »<input name="price" type="number" min="0" step=".01" required></label>
+      <label>Affichage du prix<select name="price_mode"><option value="quote">Sans prix / sur devis</option><option value="fixed">Afficher un prix</option></select></label>
+      <label id="priceField" hidden>Prix (€)<input name="price" type="number" min="0" step=".01" disabled></label>
       <label>Image (URL ou fichier)<input name="image_url" placeholder="Hdv18.jpg"></label>
       <label>Mode de vente<select name="supply_mode"><option value="stock">En stock</option><option value="on_request">Sur commande (disponibilité à confirmer)</option></select></label>
       <label>Type d'annonce<select name="offer_type"><option value="standard">Annonce standard</option><option value="custom">Compte HDV sur demande</option><option value="random">HDV aléatoire promotionnel</option></select></label>
@@ -178,9 +179,9 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
     <div class="panel"><div class="panelHeading"><h2>Catalogue</h2><span class="sectionLabel">Vos comptes</span></div><div id="items">Chargement…</div></div>
    <div class="panel" id="bulkImportPanel">
  <div class="panelHeading"><h2>Importer un catalogue fournisseur</h2></div>
- <p class="muted">Importez en une fois des offres pour lesquelles vous possédez une autorisation de diffusion. Les comptes seront affichés <strong>sur commande</strong> : la disponibilité doit être vérifiée avant d'accepter un paiement. Les prix du fichier doivent être en <strong>euros, frais et marge compris</strong>.</p>
+ <p class="muted">Importez en une fois des offres pour lesquelles vous possédez une autorisation de diffusion. Les comptes seront affichés <strong>sur commande</strong> : la disponibilité doit être vérifiée avant d'accepter un paiement. Laissez le prix vide pour une offre sur devis. Les montants renseignés sont en euros, frais et marge compris.</p>
  <details class="importHelp"><summary>Format CSV attendu</summary><p>Colonnes séparées par un point-virgule, avec la première ligne :</p>
- <code>reference;jeu;titre;prix_eur;description;image_url;url_source</code><p>Seuls <strong>reference, titre et prix_eur</strong> sont obligatoires. Une même référence met à jour l'annonce lors des imports suivants.</p>
+ <code>reference;jeu;titre;prix_eur;description;image_url;url_source</code><p>Seuls <strong>reference et titre</strong> sont obligatoires. Un prix vide indique une offre sur devis. Une même référence met à jour l'annonce lors des imports suivants.</p>
  </details>
  <label>Fichier CSV fournisseur<input id="supplierCsvFile" type="file" accept=".csv,text/csv" style="background:#f8fbff"></label>
  <label>Ou coller les lignes CSV<textarea id="supplierCsvText" rows="5" placeholder="reference;jeu;titre;prix_eur;description;image_url;url_source"></textarea></label>
@@ -222,6 +223,7 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
  </main>
 </div>
 <script type="module">
+import {hasPrice, priceLabel} from './js/listing-display.js';
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const $=id=>document.getElementById(id),cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
 const viewNames=['overview','listings','orders','tickets','likes','users','notifications'];
@@ -388,7 +390,14 @@ async function loadLikes(){
 }
 async function loadTickets(){const {data,error}=await db.from('support_tickets').select('id,subject,message,status,admin_reply,created_at').order('created_at',{ascending:false}).limit(100);const box=$('ticketsList');box.replaceChildren();if(error){box.textContent=error.message;return}const pending=data.filter(t=>t.status!=='closed').length;$('ticketCount').textContent=pending?'('+pending+' à traiter)':'';if(!data.length){box.textContent='Aucune demande pour le moment.';return}for(const t of data){const row=document.createElement('div');row.className='item';const title=document.createElement('strong');title.textContent=t.subject+' — '+(t.status==='closed'?'Traité':'À traiter');const date=document.createElement('small');date.textContent=new Date(t.created_at).toLocaleString('fr-FR');const msg=document.createElement('p');msg.textContent=t.message;const answer=document.createElement('textarea');answer.rows=2;answer.placeholder='Réponse à conserver (non envoyée automatiquement par e-mail)';answer.value=t.admin_reply||'';const save=document.createElement('button');save.textContent='Enregistrer la réponse';save.onclick=async()=>{const {error}=await db.from('support_tickets').update({admin_reply:answer.value,status:'in_progress',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Réponse enregistrée (pas encore envoyée au client)';if(!error)await loadTickets()};const close=document.createElement('button');close.className='secondary';close.textContent='Marquer traité';close.onclick=async()=>{const {error}=await db.from('support_tickets').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Demande clôturée';if(!error)await loadTickets()};row.append(title,date,msg,answer,save,close);box.append(row)}}
 let editId=null;
-function clear(){editId=null;$('listingForm').reset();$('formTitle').textContent='Nouvelle annonce'}
+function syncPriceField(){
+ const form=$('listingForm'), fixed=form.elements.price_mode.value==='fixed';
+ $('priceField').hidden=!fixed;
+ form.elements.price.disabled=!fixed;
+ form.elements.price.required=fixed;
+}
+$('listingForm').elements.price_mode.onchange=syncPriceField;
+function clear(){editId=null;$('listingForm').reset();syncPriceField();$('formTitle').textContent='Nouvelle annonce'}
 $('reset').onclick=clear;
 async function load(){
  const {data,error}=await db.from('listings').select('*').order('created_at',{ascending:false});
@@ -396,16 +405,16 @@ async function load(){
  $('items').replaceChildren();
  for(const item of data){
   const row=document.createElement('div');row.className='item';
-  const title=document.createElement('strong');title.textContent=item.title+' — '+Number(item.price).toFixed(2)+' €';
+  const title=document.createElement('strong');title.textContent=item.title+' — '+priceLabel(item)+(item.discount_percent>0?' · −'+item.discount_percent+' %':'');
   const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'Publiée · visible aux invités':'Brouillon masqué')+(item.supply_mode==='on_request'?' · Sur commande':'');
-  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','offer_type','discount_percent','town_hall_level','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':key==='offer_type'?'standard':key==='discount_percent'?0:'');form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
+  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url','supply_mode','offer_type','discount_percent','town_hall_level','supplier_reference','source_url'])form.elements[key].value=item[key]??(key==='supply_mode'?'stock':key==='offer_type'?'standard':key==='discount_percent'?0:'');form.elements.price_mode.value=hasPrice(item)?'fixed':'quote';syncPriceField();form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
   const publish=document.createElement('button');publish.textContent=item.active?'🟢 Publiée aux invités · Masquer':'🌍 Publier pour tous';publish.className='secondary';publish.type='button';publish.onclick=async()=>{const {error}=await db.from('listings').update({active:!item.active}).eq('id',item.id);$('status').textContent=error?error.message:(item.active?'Annonce masquée aux visiteurs.':'Annonce publiée pour les visiteurs, y compris les invités.');if(!error){await load();await updateOverview()}};
   const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
   row.append(title,sub,publish,edit,del);$('items').append(row)
  }
 }
 $('listingForm').onsubmit=async e=>{
- e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,offer_type:form.elements.offer_type.value,discount_percent:Number(form.elements.discount_percent.value)||0,town_hall_level:form.elements.town_hall_level.value?Number(form.elements.town_hall_level.value):null,active:form.elements.active.checked,sold:form.elements.sold.checked};
+ e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:form.elements.price_mode.value==='quote'?null:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,offer_type:form.elements.offer_type.value,discount_percent:Number(form.elements.discount_percent.value)||0,town_hall_level:form.elements.town_hall_level.value?Number(form.elements.town_hall_level.value):null,active:form.elements.active.checked,sold:form.elements.sold.checked};
  const q=editId?db.from('listings').update(value).eq('id',editId):db.from('listings').insert(value);
  const {error}=await q;$('status').textContent=error?error.message:'Annonce enregistrée';if(!error){clear();await load()}
 };
@@ -444,15 +453,15 @@ function parseSupplierCatalog(text){
   image:lookup(['image_url','image','photo']),
   url:lookup(['url_source','source_url','lien'])
  };
- if(ix.ref<0||ix.title<0||ix.price<0)throw Error('Colonnes obligatoires : reference, titre, prix_eur.');
+ if(ix.ref<0||ix.title<0)throw Error('Colonnes obligatoires : reference, titre.');
  const parsed=[],dupes=new Set();
  for(let n=1;n<rows.length;n++){
   const cells=rows[n];
   if(cells.every(x=>!x.trim()))continue;
   const val=k=>ix[k]<0?'':String(cells[ix[k]]||'').trim();
   const ref=val('ref'),title=val('title'),number=val('price').replace(/€/g,'').replace(/\s/g,'').replace(',','.');
-  const price=Number(number);
-  if(!ref||ref.length>190||!title||title.length>250||!Number.isFinite(price)||price<=0||price>100000)
+  const price=number===''?null:Number(number);
+  if(!ref||ref.length>190||!title||title.length>250||(price!==null&&(!Number.isFinite(price)||price<0||price>100000)))
    throw Error('Ligne '+(n+1)+' : référence, titre ou prix en euros invalide.');
   if(dupes.has(ref))throw Error('Référence répétée : '+ref);
   dupes.add(ref);
@@ -483,7 +492,7 @@ async function previewSupplier(){
   table.append(headings);
   for(const item of supplierImportRows.slice(0,8)){
    const tr=document.createElement('tr');
-   for(const txt of [item.supplier_reference,item.game,item.title,item.price.toFixed(2)]){const td=document.createElement('td');td.textContent=txt;tr.append(td)}table.append(tr);
+   for(const txt of [item.supplier_reference,item.game,item.title,priceLabel(item)]){const td=document.createElement('td');td.textContent=txt;tr.append(td)}table.append(tr);
   }
   wrap.append(table);box.append(wrap);
   $('supplierImportStatus').textContent=supplierImportRows.length+' annonce(s) valide(s). Aperçu des 8 premières. Toutes seront proposées sur commande.';
@@ -496,7 +505,7 @@ $('supplierImportConsent').onchange=()=>{$('supplierImportSend').disabled=!$('su
 $('supplierImportPreview').onclick=previewSupplier;
 $('supplierImportSend').onclick=async()=>{
  if(!$('supplierImportConsent').checked||!supplierImportRows.length)return;
- if(!confirm('Publier '+supplierImportRows.length+' offre(s) sur commande ? Assurez-vous de disposer des droits de republication, du prix final en euros et de pouvoir honorer le délai annoncé.'))return;
+ if(!confirm('Publier '+supplierImportRows.length+' offre(s) sur commande ? Assurez-vous de disposer des droits de republication, des conditions de vente et de pouvoir honorer le délai annoncé.'))return;
  const btn=$('supplierImportSend');btn.disabled=true;let done=0;
  try{
   for(let i=0;i<supplierImportRows.length;i+=40){

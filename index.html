@@ -101,7 +101,8 @@ footer{margin-top:25px;padding:28px 15px 90px;background:#090714;border-top:1px 
 </main>
 <footer><strong>IG Buy Now</strong> · Comptes gaming sur demande · <a href="./mes-demandes.html">Mes demandes</a><a href="#annonces">Annonces</a><span>Site indépendant non affilié à Supercell.</span></footer>
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Espace client"><div class="panel"><button type="button" class="close" id="close" aria-label="Fermer">✕</button><div id="modalContent"></div></div></div>
-<script>
+<script type="module">
+import {priceLabel, discountLabel} from "./js/listing-display.js";
 (function(){
 const $=id=>document.getElementById(id),modal=$('modal');
 let listings=[],totalListings=0,pageSize=24,loading=false,requestVersion=0,searchTimer,authConfig=null;
@@ -111,7 +112,8 @@ function showDetails(a){
  const wrapper=txt('div',undefined,'requestForm');wrapper.append(txt('h2',a.title),txt('p',a.description));
  const extra=a.offer_type==='random'?'Répartition annoncée : HDV 15 (75 %), HDV 16 (15 %), HDV 17 (7 %), HDV 18 (3 %). Répartition à confirmer avant toute commande.':'';
  if(extra)wrapper.append(txt('p',extra));
- wrapper.append(txt('p','Réduction de −'+a.discount_percent+' % sur le devis confirmé. Aucun paiement n’est demandé à cette étape.'));
+ wrapper.append(txt('p',priceLabel(a)));
+ if(discountLabel(a))wrapper.append(txt('p','Remise '+discountLabel(a)+' sur le devis confirmé.'));
  const btn=txt('button','Décrire mon compte');btn.onclick=()=>{modal.classList.remove('show');window.igbnRequest?.(a.id)};wrapper.append(btn);box.append(wrapper);modal.classList.add('show');
 }
 $('close').onclick=()=>modal.classList.remove('show');
@@ -124,8 +126,8 @@ function makeCard(a){
  const random=a.offer_type==='random',th=a.town_hall_level;
  const card=txt('article',undefined,'listing');if(th)card.dataset.th=String(th);
  const visual=txt('div',undefined,'visual');
- visual.append(txt('span','−'+(a.discount_percent||0)+' %','promoBadge'));
- if(!random&&a.image_url){
+ if(discountLabel(a))visual.append(txt('span',discountLabel(a),'promoBadge'));
+ if(a.image_url){
   const image=document.createElement('img');image.loading='lazy';image.referrerPolicy='no-referrer';image.src=a.image_url;image.alt='Hôtel de ville '+(th||'')+' de Clash of Clans';
   image.onerror=()=>{image.remove();visual.append(txt('div','🏰','artFallback'))};visual.append(image);
  }else if(random){visual.append(txt('div','?','artFallback'))}
@@ -133,12 +135,12 @@ function makeCard(a){
  const fav=txt('button','♡','likeButton favoriteIcon');fav.type='button';fav.dataset.listingId=a.id;fav.title='Ajouter aux favoris';fav.setAttribute('aria-label','Ajouter aux favoris');fav.setAttribute('aria-pressed','false');fav.onclick=()=>window.igbnLike?.(a.id,fav);visual.append(fav);
  const body=txt('div',undefined,'cardBody');
  const title=txt('h3',undefined,'cardHeadline');
- if(random){title.textContent='HDV Aléatoire'}else{title.append(txt('span','HDV '),txt('span',String(th||'')))}
- const type=txt('span',random?'Prix réduit −15 %':'Compte sur demande','cardType');
- const desc=txt('p',random?'Compte aléatoire parmi les HDV 15, 16, 17 ou 18. L’attribution et le devis seront confirmés avant paiement.':'Détaillez votre produit et votre demande dans la description.','cardDesc');
+ title.textContent=a.title;
+ const type=txt('span',random?'Offre aléatoire':a.supply_mode==='on_request'?'Compte sur demande':'Compte en stock','cardType');
+ const desc=txt('p',a.description||'','cardDesc');
  const footer=txt('div',undefined,'cardFooter');
  const button=txt('button',random?'Demander ce compte':'▣ Faire une demande');button.type='button';button.onclick=()=>window.igbnRequest?.(a.id);footer.append(button);
- const extra=txt('div',undefined,'cardInfo');const detail=txt('button','Voir les détails');detail.type='button';detail.style.cssText='background:transparent;color:#bda1dc;border:0;padding:2px;font-size:10px';detail.onclick=()=>showDetails(a);extra.append(txt('span','Sans prix affiché · sur devis'),detail);
+ const extra=txt('div',undefined,'cardInfo');const detail=txt('button','Voir les détails');detail.type='button';detail.style.cssText='background:transparent;color:#bda1dc;border:0;padding:2px;font-size:10px';detail.onclick=()=>showDetails(a);extra.append(txt('span',priceLabel(a)),detail);
  body.append(title,type,desc,footer,extra);card.append(visual,body);return card;
 }
 function render(){

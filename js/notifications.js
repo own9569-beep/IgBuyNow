@@ -1,3 +1,4 @@
+import {discountLabel} from './listing-display.js';
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const cfg=await fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json());
 const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
@@ -64,7 +65,7 @@ window.igbnRequest=async listingId=>{
  const modal=document.getElementById('modal'),box=document.getElementById('modalContent');
  if(!modal||!box)return;
  const root=safe('div','');root.className='requestForm';
- root.append(safe('h2','Demander un compte'),safe('p',listing.title+' · Remise de '+(listing.discount_percent||0)+' % sur le devis confirmé.'));
+ root.append(safe('h2','Demander un compte'),safe('p',listing.title+(discountLabel(listing)?' · Remise '+discountLabel(listing)+' sur le devis confirmé.':'')));
  const info=safe('p',listing.offer_type==='random'
   ?'Indiquez vos préférences. Pour une offre aléatoire, la catégorie sera confirmée avant tout paiement.'
   :'Précisez les niveaux de héros, skins, équipements, niveau de village et tous les éléments que vous voulez retrouver sur ce compte.');
