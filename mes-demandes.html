@@ -1,0 +1,17 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mes demandes — IG Buy Now</title><style>*{box-sizing:border-box}body{margin:0;background:#e8effa;color:#102b50;font:15px system-ui}header{background:linear-gradient(120deg,#071b3c,#125bb3);color:white;padding:23px max(16px,calc((100vw - 850px)/2))}header a{color:white}main{max-width:850px;margin:24px auto;padding:0 14px}.card{background:white;border:1px solid #cbdaf0;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 8px 25px #153f7512}.item{padding:15px 0;border-top:1px solid #d9e5f2;overflow-wrap:anywhere}small{color:#61738a}h1{font-size:26px;margin:14px 0 4px}h2{font-size:19px}p{line-height:1.6}</style></head><body><header><a href="./">← Retour à la boutique</a><h1>Mes demandes</h1><p>Suivi des questions et demandes d’achat</p></header><main><p id="status">Chargement…</p><section class="card"><h2>🛒 Demandes d’achat</h2><p>Une demande n'est pas un achat : aucun paiement n'est effectué.</p><div id="orders"></div></section><section class="card"><h2>✉ Questions au support</h2><div id="tickets"></div></section></main><script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
+const cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey),$=id=>document.getElementById(id);
+const {data:{user}}=await db.auth.getUser();
+if(!user){$('status').textContent='Connectez-vous depuis la boutique pour consulter vos demandes.'}
+else{
+ $('status').textContent='Connecté : '+user.email;
+ const [orders,tickets]=await Promise.all([db.from('order_requests').select('id,listing_id,message,status,created_at').order('created_at',{ascending:false}),db.from('support_tickets').select('id,subject,message,status,admin_reply,created_at').order('created_at',{ascending:false})]);
+ function add(box,title,lines,date){const row=document.createElement('div');row.className='item';const h=document.createElement('strong');h.textContent=title;row.append(h);for(const line of lines){const p=document.createElement('p');p.textContent=line;row.append(p)}const time=document.createElement('small');time.textContent=new Date(date).toLocaleString('fr-FR');row.append(time);box.append(row)}
+ if(orders.error)$('orders').textContent=orders.error.message;
+ else if(!orders.data.length)$('orders').textContent='Aucune demande.';
+ else{const ids=[...new Set(orders.data.map(x=>x.listing_id))];const {data:ls}=await db.from('listings').select('id,title').in('id',ids);const names=Object.fromEntries((ls||[]).map(x=>[x.id,x.title]));for(const o of orders.data)add($('orders'),(names[o.listing_id]||'Annonce')+' — '+o.status,[o.message||'Sans commentaire'],o.created_at)}
+ if(tickets.error)$('tickets').textContent=tickets.error.message;
+ else if(!tickets.data.length)$('tickets').textContent='Aucune question.';
+ else for(const t of tickets.data)add($('tickets'),t.subject+' — '+t.status,[t.message,...(t.admin_reply?['Réponse du support : '+t.admin_reply]:[])],t.created_at);
+}
+</script></body></html>
