@@ -1,0 +1,33 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administration — IG Buy Now</title><style>
+:root{font-family:system-ui,sans-serif;color:#112b51;background:#e8effa}*{box-sizing:border-box}body{margin:0}header{padding:22px;background:linear-gradient(120deg,#071b3c,#125bb3);color:white}header a{color:white}main{max-width:980px;margin:25px auto;padding:0 18px}.panel{background:white;border:1px solid #cbdaf0;border-radius:17px;padding:24px;margin:18px 0;box-shadow:0 8px 28px #153f7512}h1{margin:0 0 8px;font-size:26px}h2{font-size:20px}label{display:block;margin:12px 0;font-size:13px;font-weight:700}input,textarea{display:block;width:100%;margin-top:6px;border:1px solid #bfd1ea;border-radius:9px;padding:12px;font:inherit}button{background:#1457ab;color:white;border:0;border-radius:9px;padding:12px 16px;font-weight:700;cursor:pointer;margin:5px 6px 5px 0}button.secondary{background:#e4efff;color:#134a8b}button.danger{background:#a82938}.item{border-top:1px solid #d8e2f2;padding:14px 0}small{color:#58728d}#status{font-weight:650}.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}@media(max-width:600px){.grid{display:block}.panel{padding:17px}}</style></head><body><header><a href="./">← Retour à la boutique</a><h1>IG BUY NOW · Administration</h1></header><main><p id="status">Vérification des autorisations…</p><section id="dashboard" hidden><div class="panel"><h2 id="formTitle">Nouvelle annonce</h2><form id="listingForm"><div class="grid"><label>Jeu<input name="game" required placeholder="Clash of Clans"></label><label>Titre<input name="title" required></label><label>Prix (€)<input name="price" type="number" min="0" step=".01" required></label><label>Image (URL ou nom du fichier)<input name="image_url" placeholder="Hdv18.jpg"></label></div><label>Description<textarea name="description" rows="4"></textarea></label><label><input name="active" type="checkbox" checked style="display:inline;width:auto"> Annonce visible</label><label><input name="sold" type="checkbox" style="display:inline;width:auto"> Vendue</label><button type="submit">Enregistrer l'annonce</button><button type="button" id="reset" class="secondary">Nouvelle annonce</button></form></div><div class="panel"><h2>Mes annonces</h2><div id="items">Chargement…</div></div></section></main><script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
+const $=id=>document.getElementById(id),cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+const {data:{user}}=await db.auth.getUser();
+if(!user){$('status').textContent='Connecte-toi d’abord depuis la boutique.'}
+else{
+ const {data:admin,error}=await db.from('admin_members').select('user_id').eq('user_id',user.id).maybeSingle();
+ if(error||!admin){$('status').textContent='Accès réservé à l’administrateur.'}
+ else{$('status').textContent='Connecté en tant qu’administrateur : '+user.email;$('dashboard').hidden=false;await load()}
+}
+let editId=null;
+function clear(){editId=null;$('listingForm').reset();$('formTitle').textContent='Nouvelle annonce'}
+$('reset').onclick=clear;
+async function load(){
+ const {data,error}=await db.from('listings').select('*').order('created_at',{ascending:false});
+ if(error){$('items').textContent=error.message;return}
+ $('items').replaceChildren();
+ for(const item of data){
+  const row=document.createElement('div');row.className='item';
+  const title=document.createElement('strong');title.textContent=item.title+' — '+Number(item.price).toFixed(2)+' €';
+  const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'En ligne':'Masquée');
+  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url'])form.elements[key].value=item[key]??'';form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';scrollTo({top:0,behavior:'smooth'})};
+  const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
+  row.append(title,sub,edit,del);$('items').append(row)
+ }
+}
+$('listingForm').onsubmit=async e=>{
+ e.preventDefault();const form=e.currentTarget;const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:Number(form.elements.price.value),image_url:form.elements.image_url.value.trim()||null,active:form.elements.active.checked,sold:form.elements.sold.checked};
+ const q=editId?db.from('listings').update(value).eq('id',editId):db.from('listings').insert(value);
+ const {error}=await q;$('status').textContent=error?error.message:'Annonce enregistrée';if(!error){clear();await load()}
+};
+</script></body></html>
