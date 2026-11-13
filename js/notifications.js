@@ -55,6 +55,9 @@ window.igbnLike=async (listingId,button)=>{
 };
 window.igbnRequest=async listingId=>{
  const {data:{user}}=await db.auth.getUser();if(!user){document.getElementById('account')?.click();return}
+ const {data:controls,error:controlsError}=await db.from('account_controls').select('purchase_blocked,banned').eq('user_id',user.id).maybeSingle();
+ if(controlsError){alert('Impossible de vérifier votre compte pour le moment.');return}
+ if(controls?.banned||controls?.purchase_blocked){alert('Votre compte n’est pas autorisé à envoyer de nouvelles demandes d’achat. Contactez le support si vous pensez qu’il s’agit d’une erreur.');return}
  const message=prompt('Votre question ou demande concernant ce compte (aucun paiement demandé) :','Bonjour, je souhaite des renseignements sur ce compte.');
  if(message===null)return;
  const {error}=await db.from('order_requests').insert({user_id:user.id,listing_id:listingId,message:message.trim().slice(0,1000)});
