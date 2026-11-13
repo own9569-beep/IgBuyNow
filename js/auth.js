@@ -60,7 +60,7 @@ async function draw(){
  const n=make('p','auth-notice');n.id='authNotice';n.setAttribute('role','status');n.hidden=true;wrap.append(n);
  wrap.append(make('p','auth-legal','Connexion sécurisée • IG Buy Now'));area.append(wrap);
 }
-function refresh(){account.textContent=user?'👤 '+(user.email?.split('@')[0]||'Mon compte'):'👤 Connexion / Inscription'}
+function refresh(){account.textContent='◉ Mon compte';account.title=user?'Connecté : '+user.email:'Connexion / Inscription'}
 account.onclick=()=>{draw();modal.classList.add('show')};
 if(client){
  const params=new URLSearchParams(location.search);
