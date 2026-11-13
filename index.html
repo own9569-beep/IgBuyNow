@@ -151,12 +151,13 @@ header{padding-top:17px;padding-bottom:18px}.headerTop{display:flex;align-items:
      status.className='status';status.textContent=a.sold?'● Vendu':'● Disponible';if(a.sold)status.style.color='var(--muted)';
      info.append(price,status);
      const actions=document.createElement('div');actions.className='actions';
-     const like=document.createElement('button');like.className='favoriteIcon';like.textContent='♡';like.title='Ajouter à mes favoris';like.setAttribute('aria-label','Ajouter aux favoris');like.setAttribute('aria-pressed','false');like.onclick=()=>window.igbnLike?.(a.id,like);photo.append(like);
+     const like=document.createElement('button');like.className='favoriteIcon';like.dataset.listingId=a.id;like.textContent='♡';like.title='Ajouter à mes favoris';like.setAttribute('aria-label','Ajouter aux favoris');like.setAttribute('aria-pressed','false');like.onclick=()=>window.igbnLike?.(a.id,like);photo.append(like);
      const request=document.createElement('button');request.className='questionAction';request.textContent='✉ Poser une question';request.onclick=()=>window.igbnRequest?.(a.id);
      const detail=document.createElement('button');detail.textContent='Détails';detail.onclick=()=>show(a.title,a.description);
      const buy=document.createElement('button');buy.className='primary';buy.textContent=a.sold?'Indisponible':'Acheter';buy.disabled=!!a.sold;buy.onclick=()=>{location.href='./checkout.html?id='+encodeURIComponent(a.id)};
      actions.append(detail,buy,request);bottom.append(info,actions);content.append(h,desc,bottom);article.append(photo,content);grid.append(article);
    }
+   document.dispatchEvent(new Event('igbn:listings-rendered'));
  }
  $('search').oninput=render;
  const navSupport=$('navSupport');if(navSupport)navSupport.onclick=e=>{e.preventDefault();document.getElementById('supportLaunch')?.click()};
