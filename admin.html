@@ -48,7 +48,7 @@ input[type=checkbox]{accent-color:#145ec7;vertical-align:middle;width:16px;heigh
 textarea{resize:vertical;min-height:80px}.checkLine{display:flex;flex-wrap:wrap;gap:20px;margin:8px 0 14px}.checkLine label{margin:0}
 button.primary,.panel button:not(.secondary):not(.danger),.quick button{background:#155bc5;color:white;border-radius:10px;padding:11px 15px;font-size:13px;font-weight:750}
 .quick button{background:#f1f6ff;color:#163b73}
-button.primary:hover,.panel button:not(.secondary):not(.danger):hover{background:#0d4aab}.quick button:hover{background:#e6f0ff}
+button.primary:hover,.panel button:not(.secondary):not(.danger):hover{background:#0d4aab}.quick button:hover{background:#e6f0ff}.panel .quick button{background:#f1f6ff;color:#163b73;border:1px solid #dce8fa;text-align:left;padding:19px 15px}.panel .quick button:hover{background:#e6f0ff}
 button.secondary{color:#1854a5;background:#eaf2ff;border:1px solid #d6e5f9;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:750}
 button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:750}
 .item{padding:16px;margin:10px 0;border-radius:13px;border:1px solid #e4eaf4;background:#fbfcff;overflow-wrap:anywhere}
@@ -62,7 +62,7 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
 @media(max-width:380px){.quick{grid-template-columns:1fr}.topbar{flex-wrap:wrap}.kpi{padding:12px}}
 </style></head>
 <body>
-<div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="status">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
+<div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="gateMessage">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
 <div id="dashboard" hidden>
  <aside class="side">
   <div><div class="brand">IG <span>BUY NOW</span></div><div class="brandHint">Espace administrateur</div></div>
@@ -78,6 +78,7 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
  </aside>
  <main class="workspace">
   <div class="topbar"><div><p class="eyebrow">Back office · IG Buy Now</p><h1 id="pageTitle">Vue d'ensemble</h1><p class="subtitle" id="adminIdentity">Votre espace de gestion</p></div><div class="topActions"><button type="button" id="adminBell" hidden>🔔 <span id="adminUnread"></span></button><button class="refresh" type="button" id="refreshData">⟳ Actualiser</button></div></div>
+  <p id="status" role="status" style="margin:-13px 0 18px;font-size:12px;color:#7083a0">Administration sécurisée</p>
   <div class="view" id="view-overview">
    <div class="sectionLabel">Activité de votre boutique</div>
    <div class="kpis">
@@ -135,19 +136,38 @@ button.danger{color:#a2293d;background:#ffeff1;border:1px solid #ffd7dc;border-r
 <script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const $=id=>document.getElementById(id),cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+const viewNames=['overview','listings','orders','tickets','likes','notifications'];
+const names={overview:"Vue d'ensemble",listings:"Gestion des annonces",orders:"Demandes d'achat",tickets:"Messages clients",likes:"Favoris clients",notifications:"Notifications"};
+function showView(view){
+ if(!viewNames.includes(view))view='overview';
+ for(const name of viewNames)document.getElementById('view-'+name).hidden=name!==view;
+ for(const button of document.querySelectorAll('.nav-link')){const active=button.dataset.view===view;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false')}
+ $('pageTitle').textContent=names[view];history.replaceState(null,'','#'+view);
+ if(view==='listings'&&document.activeElement?.id==='reset')$('listingForm').scrollIntoView({behavior:'smooth'});
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+for(const button of document.querySelectorAll('[data-view]'))button.addEventListener('click',()=>showView(button.dataset.view));
+window.addEventListener('hashchange',()=>{if(!$('dashboard').hidden)showView(location.hash.slice(1))});
+async function updateOverview(){
+ const tables=[db.from('listings').select('id',{count:'exact',head:true}),db.from('order_requests').select('id',{count:'exact',head:true}).eq('status','new'),db.from('support_tickets').select('id',{count:'exact',head:true}).neq('status','closed'),db.from('listing_likes').select('user_id',{count:'exact',head:true})];
+ const results=await Promise.all(tables);
+ ['statListings','statOrders','statTickets','statLikes'].forEach((name,i)=>$(name).textContent=results[i].error?'—':String(results[i].count??0));
+}
+async function reloadAll(){await Promise.all([load(),loadTickets(),loadOrders(),loadLikes(),loadNotifications(),updateOverview()])}
+$('refreshData').onclick=reloadAll;
 const {data:{user}}=await db.auth.getUser();
-if(!user){$('status').textContent='Connecte-toi d’abord depuis la boutique.'}
+if(!user){$('gateMessage').textContent='Connecte-toi d’abord depuis la boutique pour accéder à l’administration.'}
 else{
  const {data:admin,error}=await db.from('admin_members').select('user_id').eq('user_id',user.id).maybeSingle();
- if(error||!admin){$('status').textContent='Accès réservé à l’administrateur.'}
- else{$('status').textContent='Connecté en tant qu’administrateur : '+user.email;$('dashboard').hidden=false;await load();await loadTickets();await loadOrders();await loadLikes();$('adminBell').hidden=false;await loadNotifications();setInterval(()=>{loadNotifications();loadOrders();loadTickets();loadLikes()},30000)}
+ if(error||!admin){$('gateMessage').textContent='Accès réservé à l’administrateur.'}
+ else{$('gate').hidden=true;$('dashboard').hidden=false;$('adminIdentity').textContent='Connecté en tant qu’administrateur · '+user.email;$('status').textContent='Votre espace de gestion est prêt.';$('adminBell').hidden=false;showView(location.hash.slice(1)||'overview');await reloadAll();setInterval(()=>{loadNotifications();loadOrders();loadTickets();loadLikes();updateOverview()},30000)}
 }
 async function loadNotifications(){
  const {data,error}=await db.from('site_notifications').select('id,title,body,is_read,created_at').order('created_at',{ascending:false}).limit(30);
  const count=$('adminUnread');if(error){count.textContent='';return}count.textContent=data.filter(n=>!n.is_read).length||'';
  const box=$('adminNotifications');box.replaceChildren();for(const n of data){const row=document.createElement('div');row.className='item';const title=document.createElement('strong');title.textContent=(n.is_read?'':'🔵 ')+n.title;const body=document.createElement('p');body.textContent=n.body;const read=document.createElement('button');read.textContent='Marquer lu';read.className='secondary';read.onclick=async()=>{await db.from('site_notifications').update({is_read:true}).eq('id',n.id);loadNotifications()};row.append(title,body,read);box.append(row)}if(!data.length)box.textContent='Aucune notification.';
 }
-$('adminBell').onclick=()=>{$('adminNotifications').hidden=!$('adminNotifications').hidden};
+$('adminBell').onclick=()=>showView('notifications');
 async function loadOrders(){
  const box=$('ordersList');const {data,error}=await db.from('order_requests').select('id,user_id,listing_id,message,status,created_at,admin_note').order('created_at',{ascending:false}).limit(100);
  box.replaceChildren();if(error){box.textContent=error.message;return}
@@ -188,7 +208,7 @@ async function load(){
   const row=document.createElement('div');row.className='item';
   const title=document.createElement('strong');title.textContent=item.title+' — '+Number(item.price).toFixed(2)+' €';
   const sub=document.createElement('p');sub.textContent=item.game+' · '+(item.sold?'Vendue':item.active?'En ligne':'Masquée');
-  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url'])form.elements[key].value=item[key]??'';form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';scrollTo({top:0,behavior:'smooth'})};
+  const edit=document.createElement('button');edit.textContent='Modifier';edit.className='secondary';edit.onclick=()=>{editId=item.id;const form=$('listingForm');for(const key of ['game','title','description','price','image_url'])form.elements[key].value=item[key]??'';form.elements.active.checked=item.active;form.elements.sold.checked=item.sold;$('formTitle').textContent='Modifier l’annonce';$('listingForm').scrollIntoView({behavior:'smooth',block:'start'})};
   const del=document.createElement('button');del.textContent='Supprimer';del.className='danger';del.onclick=async()=>{if(!confirm('Supprimer définitivement cette annonce ?'))return;const {error}=await db.from('listings').delete().eq('id',item.id);$('status').textContent=error?error.message:'Annonce supprimée';if(!error)await load()};
   row.append(title,sub,edit,del);$('items').append(row)
  }
