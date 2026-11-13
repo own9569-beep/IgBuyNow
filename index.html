@@ -53,6 +53,20 @@ main>h2{color:var(--ink);font-size:21px;font-weight:750;letter-spacing:-.02em;ma
 .auth-user{display:flex;align-items:center;gap:10px;overflow-wrap:anywhere;background:var(--surface);padding:15px;border-radius:12px;margin-bottom:18px;text-align:left}
 .auth-avatar{font-size:23px}
 @media(max-width:480px){.modal{padding:12px}.modal .panel{margin:6vh auto;border-radius:20px}.auth-wrap{padding:29px 22px 25px}.auth-title{font-size:23px}}
+
+/* Blue-first brand refinement */
+:root{--bg:#e8effa;--header:#071e43;--surface:#eaf2ff;--blue:#164d9b;--border:#c9d9f0}
+header{background:linear-gradient(125deg,#061a3a,#0e3e83 75%,#175bb0);border-bottom:3px solid #2b79d4}
+.hero{background:linear-gradient(115deg,#061d44,#0d448e 66%,#1768c6);box-shadow:0 16px 45px #0a37782d}
+.brand{letter-spacing:.08em}.primary,.auth-submit{background:#1055ae;border-color:#1055ae;color:white}
+.modal .panel{background:linear-gradient(180deg,#0a3474 0,#1056aa 165px,var(--card) 165px);border-color:#235eab}
+.auth-wrap>.auth-mark{background:#fff;color:#1352a3;box-shadow:0 7px 22px #041e4e50}
+.auth-eyebrow,.auth-title,.auth-subtitle{color:white}
+.auth-subtitle{color:#d6e7ff}
+.auth-tabs{background:#dceaff;border-color:#c3d7f4}.auth-tab.active{background:#1255aa;color:#fff}
+.auth-google{border:2px solid #bfd5f4;background:#f5f9ff;color:#113b75}
+.auth-field span{color:var(--ink)}
+body.dark .auth-title,body.dark .auth-subtitle{color:#fff}
 </style></head><body><header><div class="brand">IG BY NOW</div><div class="bar"><button id="theme">🌙 Nuit</button><button id="account">👤 Compte</button></div><input id="search" class="search" placeholder="🔎 Rechercher une annonce..."></header><main><section class="hero"><h1>La marketplace des gamers</h1><p>Découvre nos annonces gaming et consulte les fiches détaillées.</p><button onclick="document.getElementById('annonces').scrollIntoView({behavior:'smooth'})">Voir les annonces</button></section><h2 id="annonces">🎮 Annonces</h2><div id="listingGrid" aria-live="polite"><p class="hint">Chargement des annonces…</p></div><div class="notice">Les annonces sont gérées uniquement par l'administrateur via le dépôt GitHub. Paiement non activé.</div></main><footer>IG by Now • Aperçu public</footer><button id="chat" class="primary">💬 Assistance</button><div id="chatPanel"><b>Assistance IG by Now</b><p class="hint">Chat de démonstration, pas encore relié à une IA.</p><input id="chatInput" placeholder="Pose ta question..."><button id="chatSend">Envoyer</button><p id="chatReply"></p></div><div id="modal" class="modal"><div class="panel"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div><script>
 (function(){
  const $=id=>document.getElementById(id);
