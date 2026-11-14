@@ -129,7 +129,8 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
    <button type="button" class="nav-link" data-view="tickets">✉️ &nbsp; Messages</button>
    <button type="button" class="nav-link" data-view="likes">❤️ &nbsp; Favoris</button>
    <button type="button" class="nav-link" data-view="users">👥 &nbsp; Utilisateurs</button>
-   <button type="button" class="nav-link" data-view="notifications">🔔 &nbsp; Notifications</button>
+   <button type="button" class="nav-link" data-view="wheel">✦ &nbsp; Roue hebdomadaire</button>
+<button type="button" class="nav-link" data-view="notifications">🔔 &nbsp; Notifications</button>
   </nav>
   <div class="sideFooter"><a href="./">← Retour à la boutique</a><small>Administration privée · IG Buy Now<br>Paiements désactivés</small></div>
  </aside>
@@ -223,14 +224,14 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
    <div class="viewHead"><div><h2>Centre de notifications</h2><p>Suivez les nouveaux favoris, les questions et les demandes.</p></div></div>
    <div class="panel" id="adminNotifications">Chargement…</div>
   </section>
- </main>
+<section class="view" id="view-wheel" hidden><div class="viewHead"><h2>Roue hebdomadaire</h2></div><div class="panel"><p>Un tour gratuit par compte, chaque semaine (lundi à 00 h, Paris). Les gains sont des points Bits. Modifie les huit lots et leurs probabilités ci-dessous.</p><form id="wheelSettings"><label><input id="wheelEnabled" type="checkbox"> Activer la roue</label><div id="wheelRows"></div><p id="wheelAdminStatus" role="status"></p><button type="submit">Enregistrer la roue</button><button type="button" id="wheelReload">Actualiser</button></form></div></section> </main>
 </div>
 <script type="module">
 import {hasPrice, priceLabel} from './js/listing-display.js';
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const $=id=>document.getElementById(id),cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
-const viewNames=['overview','listings','orders','tickets','likes','users','notifications'];
-const names={overview:"Vue d'ensemble",listings:"Gestion des annonces",orders:"Demandes d'achat",tickets:"Messages clients",likes:"Favoris clients",users:"Gestion des utilisateurs",notifications:"Notifications"};
+const viewNames=['overview','listings','orders','tickets','likes','users','notifications','wheel'];
+const names={wheel:'Roue hebdomadaire',overview:"Vue d'ensemble",listings:"Gestion des annonces",orders:"Demandes d'achat",tickets:"Messages clients",likes:"Favoris clients",users:"Gestion des utilisateurs",notifications:"Notifications"};
 function showView(view){
  if(!viewNames.includes(view))view='overview';
  for(const name of viewNames)document.getElementById('view-'+name).hidden=name!==view;
@@ -557,4 +558,4 @@ $('supplierImportSend').onclick=async()=>{
  finally{btn.disabled=!$('supplierImportConsent').checked||!supplierImportRows.length}
 };
 
-</script></body></html>
+</script><script type="module" src="./js/wheel-admin.js"></script></body></html>
