@@ -18,7 +18,9 @@ Ne pas reprendre une adresse personnelle, l'employeur ou un e-mail privé comme 
 Éditeur : [identité légale confirmée], exerçant sous le nom commercial IG Buy Now.
 Statut et immatriculation : [à renseigner selon la structure réelle].
 Adresse professionnelle : [à confirmer].
-Contact : [e-mail et téléphone professionnels].
+Contact : cochehesap.no7@outlook.com (publication autorisée par l’utilisateur). Téléphone professionnel : à confirmer.
+Pays d’établissement déclaré : France. Nom légal et statut : non confirmés.
+Activité : l’utilisateur précise ne pas vendre directement des comptes ; rôle et prestation facturée à clarifier avant finalisation des CGV.
 Directeur de la publication : [à confirmer].
 Hébergeur : Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Source : notice de confidentialité officielle Vercel. Coordonnée téléphonique de l'hébergeur à vérifier avant finalisation.
 Données et authentification : services Supabase. Région du projet et garanties contractuelles de transfert à vérifier.
