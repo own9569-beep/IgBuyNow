@@ -1,6 +1,6 @@
-import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
+import {cfg,db} from './client.js';
 const $=id=>document.getElementById(id),btn=$('spinWheel'),status=$('wheelStatus'),disc=$('wheelDisc');
-const cfg=await fetch('./config/auth.json').then(r=>r.json()),db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+
 let user=null,config=null,state=null,busy=false,generation=0;
 const node=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n};
 function rewards(items){disc.replaceChildren();$('wheelOdds').replaceChildren();items.forEach((r,i)=>{const label=node('span',r.label);label.className='wheelLabel';label.style.transform=`rotate(${i*45-67.5}deg) translateY(-50%)`;disc.append(label);const row=node('div','');row.className='oddsRow';row.append(node('span',r.label),node('strong',(r.weight/100).toLocaleString('fr-FR')+' %'));$('wheelOdds').append(row)})}

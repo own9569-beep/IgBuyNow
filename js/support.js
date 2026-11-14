@@ -1,6 +1,4 @@
-import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
-const cfg=await fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json());
-const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+import {cfg,db} from './client.js';
 const css=document.createElement('style');css.textContent=`
 #supportLaunch{position:fixed;right:18px;bottom:20px;z-index:900;background:linear-gradient(130deg,#0b3a81,#1571d2);color:white;border:2px solid #ffffff70;border-radius:50px;padding:15px 20px;box-shadow:0 12px 30px #092d6680;font-weight:800}
 #supportPanel{position:fixed;right:18px;bottom:85px;z-index:901;width:min(395px,calc(100vw - 24px));height:min(620px,calc(100dvh - 110px));background:#f7faff;color:#16365e;border:1px solid #9cbde8;border-radius:20px;box-shadow:0 18px 60px #06245c55;display:flex;flex-direction:column;overflow:hidden}

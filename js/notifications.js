@@ -1,7 +1,5 @@
 import {discountLabel} from './listing-display.js';
-import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.0';
-const cfg=await fetch('./config/auth.json',{cache:'no-store'}).then(r=>r.json());
-const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+import {cfg,db} from './client.js';
 const bell=document.getElementById('notifyBell');
 const admin=document.getElementById('adminShortcut');
 const pop=document.getElementById('notifyPanel');

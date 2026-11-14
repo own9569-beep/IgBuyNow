@@ -1,8 +1,6 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 const $ = id => document.getElementById(id);
 const account = $('account'), modal = $('modal'), area = $('modalContent');
-const config = await fetch('./config/auth.json', {cache:'no-store'}).then(r=>r.json()).catch(()=>({}));
-const client = config.supabaseUrl && config.supabaseAnonKey ? createClient(config.supabaseUrl,config.supabaseAnonKey) : null;
+import {db as client} from './client.js';
 let user=null, mode='login';
 function make(tag,cls='',value=''){const n=document.createElement(tag);if(cls)n.className=cls;if(value)n.textContent=value;return n}
 function button(text,cls,fn){const b=make('button',cls,text);b.type='button';b.onclick=fn;return b}
