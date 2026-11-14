@@ -19,8 +19,8 @@ Ne pas reprendre une adresse personnelle, l'employeur ou un e-mail privé comme 
 Statut et immatriculation : [à renseigner selon la structure réelle].
 Adresse professionnelle : [à confirmer].
 Contact : cochehesap.no7@outlook.com (publication autorisée par l’utilisateur). Téléphone professionnel : à confirmer.
-Pays d’établissement déclaré : France. Nom légal et statut : non confirmés.
-Activité : l’utilisateur précise ne pas vendre directement des comptes ; rôle et prestation facturée à clarifier avant finalisation des CGV.
+Pays d’établissement déclaré : France. L’utilisateur confirme ne pas avoir de société ni de SIRET ; aucune immatriculation n’est confirmée. IG Buy Now reste le nom commercial du projet, pas une société déclarée.
+Activité clarifiée par l’utilisateur : vente directe de comptes. Cette dernière déclaration remplace la précédente indication ambiguë de non-vente. Les CGV doivent être rédigées pour un vendeur, et non pour un simple intermédiaire.
 Directeur de la publication : [à confirmer].
 Hébergeur : Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Source : notice de confidentialité officielle Vercel. Coordonnée téléphonique de l'hébergeur à vérifier avant finalisation.
 Données et authentification : services Supabase. Région du projet et garanties contractuelles de transfert à vérifier.
