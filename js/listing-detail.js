@@ -4,10 +4,10 @@ const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textCont
 try{
  const id=new URLSearchParams(location.search).get('id');if(!/^[0-9a-f-]{36}$/i.test(id||''))throw Error('Annonce introuvable.');
  const cfg=await fetch('./config/auth.json').then(r=>r.json());
- const url=new URL(cfg.supabaseUrl+'/rest/v1/listings');url.searchParams.set('id','eq.'+id);url.searchParams.set('active','eq.true');url.searchParams.set('select','*');
+ const url=new URL(cfg.supabaseUrl+'/rest/v1/listings');url.searchParams.set('id','eq.'+id);url.searchParams.set('active','eq.true');url.searchParams.set('select','id,game,title,description,price,price_min,price_max,image_url,image_urls,active,sold,offer_type,discount_percent');
  const response=await fetch(url,{headers:{apikey:cfg.supabaseAnonKey}});if(!response.ok)throw Error('Impossible de charger cette annonce. Réessayez.');
  const [a]=await response.json();if(!a)throw Error('Cette annonce n’est plus disponible.');
- document.title=a.title+' · IG Buy Now';root.replaceChildren();
+ document.title=a.title+' · IG Buy Now';const canonical=document.createElement('link');canonical.rel='canonical';canonical.href='https://ig-buy-now.vercel.app/annonce.html?id='+encodeURIComponent(a.id);document.head.append(canonical);root.replaceChildren();
  const layout=el('div',null,'detailLayout'),gallery=el('section',null,'detailPanel'),info=el('section',null,'detailPanel');
  const photos=[...new Set([a.image_url,...(a.image_urls||[])].filter(Boolean))];
  const image=el('img');image.className='detailMainImage';image.alt=a.title;image.referrerPolicy='no-referrer';image.onerror=()=>{image.alt='Image indisponible'};

@@ -116,7 +116,7 @@ button.danger{color:#ffb1c2;background:#52182c;border-color:#a64666}
 #gate #gateMessage{background:#211630;border:1px solid #68468a;padding:20px;border-radius:13px;color:#dbc7eb}
 .gateBrand{color:#c06cff}
 .previewTable th{color:#d6b5f2;background:#281941}.previewTable td{border-color:#53396d}
-</style></head>
+</style><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/icon.png"><meta property="og:site_name" content="IG Buy Now"><meta property="og:type" content="website"><meta property="og:locale" content="fr_FR"><meta property="og:image" content="https://ig-buy-now.vercel.app/assets/social-card.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://ig-buy-now.vercel.app/assets/social-card.png"><meta property="og:title" content="IG Buy Now — Espace administrateur"><meta name="robots" content="noindex,nofollow"></head>
 <body>
 <div id="gate"><div class="gateBrand">IG <span>BUY NOW</span></div><p id="gateMessage">Vérification de votre accès privé…</p><a href="./">← Retourner à la boutique</a></div>
 <div id="dashboard" hidden>
@@ -365,7 +365,7 @@ async function loadNotifications(){
 }
 $('adminBell').onclick=()=>showView('notifications');
 async function loadOrders(){
- const box=$('ordersList');const {data,error}=await db.from('order_requests').select('id,user_id,listing_id,message,status,created_at,admin_note').order('created_at',{ascending:false}).limit(100);
+ const box=$('ordersList');const {data,error}=await db.rpc('admin_order_requests');
  box.replaceChildren();if(error){box.textContent=error.message;return}
  $('orderCount').textContent=data.length?'('+data.filter(x=>x.status==='new').length+' nouvelles)':'';
  if(!data.length){box.textContent='Aucune demande pour le moment.';return}
@@ -376,12 +376,12 @@ async function loadOrders(){
   const h=document.createElement('strong');h.textContent=(titles[item.listing_id]||'Annonce')+' — '+item.status;
   const p=document.createElement('p');p.textContent=item.message||'Demande sans commentaire';
   const date=document.createElement('small');date.textContent=new Date(item.created_at).toLocaleString('fr-FR');
-  const note=document.createElement('textarea');note.placeholder='Note interne';note.value=item.admin_note||'';
+  const note=document.createElement('textarea');note.placeholder='Note interne (administration uniquement)';note.value=item.admin_note||'';const reply=document.createElement('textarea');reply.placeholder='Réponse visible par le client';reply.value=item.customer_reply||'';
   const status=document.createElement('select');
   for(const v of ['new','reviewing','closed','cancelled']){const opt=document.createElement('option');opt.value=v;opt.textContent={new:'Nouvelle',reviewing:'En cours',closed:'Terminée',cancelled:'Annulée'}[v];status.append(opt)}
   status.value=item.status;
-  const save=document.createElement('button');save.textContent='Enregistrer';save.onclick=async()=>{const {error}=await db.from('order_requests').update({status:status.value,admin_note:note.value,updated_at:new Date().toISOString()}).eq('id',item.id);$('status').textContent=error?error.message:'Demande mise à jour';if(!error)loadOrders()};
-  row.append(h,date,p,status,note,save);box.append(row);
+  const save=document.createElement('button');save.textContent='Enregistrer';save.onclick=async()=>{const {error}=await db.from('order_requests').update({status:status.value,admin_note:note.value,customer_reply:reply.value,updated_at:new Date().toISOString()}).eq('id',item.id);$('status').textContent=error?error.message:'Demande mise à jour';if(!error)loadOrders()};
+  row.append(h,date,p,status,reply,note,save);box.append(row);
  }
 }
 async function loadLikes(){
@@ -392,7 +392,7 @@ async function loadLikes(){
  for(const item of items||[]){const p=document.createElement('p');p.textContent='❤️ '+(counts[item.id]||0)+' · '+item.title;box.append(p)}
  if(!items?.length)box.textContent='Aucune annonce.';
 }
-async function loadTickets(){const {data,error}=await db.from('support_tickets').select('id,subject,message,status,admin_reply,created_at').order('created_at',{ascending:false}).limit(100);const box=$('ticketsList');box.replaceChildren();if(error){box.textContent=error.message;return}const pending=data.filter(t=>t.status!=='closed').length;$('ticketCount').textContent=pending?'('+pending+' à traiter)':'';if(!data.length){box.textContent='Aucune demande pour le moment.';return}for(const t of data){const row=document.createElement('div');row.className='item';const title=document.createElement('strong');title.textContent=t.subject+' — '+(t.status==='closed'?'Traité':'À traiter');const date=document.createElement('small');date.textContent=new Date(t.created_at).toLocaleString('fr-FR');const msg=document.createElement('p');msg.textContent=t.message;const answer=document.createElement('textarea');answer.rows=2;answer.placeholder='Réponse à conserver (non envoyée automatiquement par e-mail)';answer.value=t.admin_reply||'';const save=document.createElement('button');save.textContent='Enregistrer la réponse';save.onclick=async()=>{const {error}=await db.from('support_tickets').update({admin_reply:answer.value,status:'in_progress',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Réponse enregistrée (pas encore envoyée au client)';if(!error)await loadTickets()};const close=document.createElement('button');close.className='secondary';close.textContent='Marquer traité';close.onclick=async()=>{const {error}=await db.from('support_tickets').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Demande clôturée';if(!error)await loadTickets()};row.append(title,date,msg,answer,save,close);box.append(row)}}
+async function loadTickets(){const {data,error}=await db.from('support_tickets').select('id,subject,message,status,admin_reply,created_at').order('created_at',{ascending:false}).limit(100);const box=$('ticketsList');box.replaceChildren();if(error){box.textContent=error.message;return}const pending=data.filter(t=>t.status!=='closed').length;$('ticketCount').textContent=pending?'('+pending+' à traiter)':'';if(!data.length){box.textContent='Aucune demande pour le moment.';return}for(const t of data){const row=document.createElement('div');row.className='item';const title=document.createElement('strong');title.textContent=t.subject+' — '+(t.status==='closed'?'Traité':'À traiter');const date=document.createElement('small');date.textContent=new Date(t.created_at).toLocaleString('fr-FR');const msg=document.createElement('p');msg.textContent=t.message;const answer=document.createElement('textarea');answer.rows=2;answer.placeholder='Réponse visible par le client dans Mes demandes';answer.value=t.admin_reply||'';const save=document.createElement('button');save.textContent='Enregistrer la réponse';save.onclick=async()=>{const {error}=await db.from('support_tickets').update({admin_reply:answer.value,status:'in_progress',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Réponse publiée dans Mes demandes et notification envoyée sur le site';if(!error)await loadTickets()};const close=document.createElement('button');close.className='secondary';close.textContent='Marquer traité';close.onclick=async()=>{const {error}=await db.from('support_tickets').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',t.id);$('status').textContent=error?error.message:'Demande clôturée';if(!error)await loadTickets()};row.append(title,date,msg,answer,save,close);box.append(row)}}
 let editId=null;
 let gallery=[];
 let uploading=false;
@@ -436,7 +436,7 @@ $('listingForm').elements.price_mode.onchange=syncPriceField;
 function clear(){editId=null;gallery=[];renderPhotos();$('photoStatus').textContent='';$('listingForm').reset();syncPriceField();$('formTitle').textContent='Nouvelle annonce'}
 $('reset').onclick=clear;
 async function load(){
- const {data,error}=await db.from('listings').select('*').order('created_at',{ascending:false});
+ const {data,error}=await db.rpc('admin_listings');
  if(error){$('items').textContent=error.message;return}
  $('items').replaceChildren();
  for(const item of data){
@@ -453,7 +453,7 @@ $('listingForm').onsubmit=async e=>{
  e.preventDefault();if(uploading)return;const form=e.currentTarget;
  if(form.elements.price_mode.value==='range'&&Number(form.elements.price_max.value)<Number(form.elements.price_min.value)){$('status').textContent='Le maximum doit être supérieur ou égal au minimum.';return}
  const value={game:form.elements.game.value.trim(),title:form.elements.title.value.trim(),description:form.elements.description.value.trim(),price:form.elements.price_mode.value==='fixed'?Number(form.elements.price.value):null,price_min:form.elements.price_mode.value==='range'?Number(form.elements.price_min.value):null,price_max:form.elements.price_mode.value==='range'?Number(form.elements.price_max.value):null,image_urls:gallery,image_url:form.elements.image_url.value.trim()||null,source_url:form.elements.source_url.value.trim()||null,supplier_reference:form.elements.supplier_reference.value.trim()||null,supply_mode:form.elements.supply_mode.value,offer_type:form.elements.offer_type.value,discount_percent:Number(form.elements.discount_percent.value)||0,town_hall_level:form.elements.town_hall_level.value?Number(form.elements.town_hall_level.value):null,active:form.elements.active.checked,sold:form.elements.sold.checked};
- const q=editId?db.from('listings').update(value).eq('id',editId):db.from('listings').insert(value);
+ const q=db.rpc('admin_write_listings',{items:[value],target_id:editId||null,import_mode:false});
  const {error}=await q;$('status').textContent=error?error.message:'Annonce enregistrée';if(!error){clear();await load()}
 };
 
@@ -548,7 +548,7 @@ $('supplierImportSend').onclick=async()=>{
  try{
   for(let i=0;i<supplierImportRows.length;i+=40){
    const batch=supplierImportRows.slice(i,i+40);
-   const {error}=await db.from('listings').upsert(batch,{onConflict:'supplier_reference'});
+   const {error}=await db.rpc('admin_write_listings',{items:batch,target_id:null,import_mode:true});
    if(error)throw new Error('Échec de l’import après '+done+' annonce(s) : '+error.message);
    done+=batch.length;$('supplierImportStatus').textContent=done+' / '+supplierImportRows.length+' offres importées.';
   }

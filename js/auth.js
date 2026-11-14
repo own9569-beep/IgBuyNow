@@ -42,8 +42,8 @@ async function draw(){
   e.preventDefault();submit.disabled=true;submit.textContent='Un instant…';
   try{
    let r;
-   if(mode==='register')r=await client.auth.signUp({email:email.i.value.trim(),password:password.i.value,options:{emailRedirectTo:location.origin}});
-   else if(mode==='reset')r=await client.auth.resetPasswordForEmail(email.i.value.trim(),{redirectTo:location.origin});
+   if(mode==='register')r=await client.auth.signUp({email:email.i.value.trim(),password:password.i.value,options:{emailRedirectTo:location.origin+'/'}});
+   else if(mode==='reset')r=await client.auth.resetPasswordForEmail(email.i.value.trim(),{redirectTo:location.origin+'/'});
    else r=await client.auth.signInWithPassword({email:email.i.value.trim(),password:password.i.value});
    if(r.error)throw r.error;
    if(mode==='login'){user=r.data.user;refresh();draw()}else notice(mode==='register'?'Compte créé ! Vérifie ta boîte e-mail pour confirmer ton inscription.':'Si cette adresse existe, tu recevras un lien de réinitialisation.');
@@ -54,7 +54,7 @@ async function draw(){
  if(mode==='reset')wrap.append(button('← Retour à la connexion','auth-back',()=>setMode('login')));
  else {
   const sep=make('div','auth-divider');sep.append(make('span','','ou continuer avec'));wrap.append(sep);
-  const google=button('Continuer avec Google','auth-google',async()=>{const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}});if(error)notice(error.message,true)});
+  const google=button('Continuer avec Google','auth-google',async()=>{const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/'}});if(error)notice(error.message,true)});
   const icon=make('span','auth-google-icon','G');google.prepend(icon);wrap.append(google);
  }
  const n=make('p','auth-notice');n.id='authNotice';n.setAttribute('role','status');n.hidden=true;wrap.append(n);
