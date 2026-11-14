@@ -82,6 +82,10 @@ footer{margin-top:25px;padding:28px 15px 90px;background:#090714;border-top:1px 
 @media(max-width:900px){.topinner{flex-wrap:wrap}.toplinks{order:3;width:100%;justify-content:space-around}.toplinks a,.catTrigger{font-size:12px}.topSearch{max-width:none}.hero{grid-template-columns:1fr 2fr;gap:15px;min-height:230px}.heroClock{display:none}.heroLogo{font-size:clamp(30px,5vw,50px)}.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.topinner{padding:10px 12px;gap:8px}.brand{font-size:19px}.brandicon{height:31px;width:31px}.brandicon svg{height:20px;width:20px}.topSearch{order:2;flex-basis:100%;max-width:100%;min-width:0}.toplinks{order:3;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}.toplinks a,.catTrigger{font-size:11px;padding:8px 12px}.headActions{margin-left:auto;gap:6px}.accountButton{max-width:98px;font-size:11px}.iconButton{width:34px;height:34px}.iconButton svg{width:18px;height:18px}#adminShortcut{padding:7px;font-size:10px}main{padding:13px 10px 25px}.hero{display:block;min-height:0;padding:19px 16px;border-radius:16px}.heroLogo{display:none}.heroCopy h1{font-size:26px}.heroCopy h2{font-size:18px}.heroFeatures{gap:7px}.heroFeature{padding:8px 6px;gap:6px;border-radius:11px}.heroFeature .emoji{width:26px;height:26px;font-size:16px}.heroFeature strong{font-size:10px}.heroFeature small{font-size:9px}.sectionTitle{gap:6px;margin:20px 0 13px}.sectionTitle h2{font-size:22px}.sectionTitle h2:before{height:25px}.sectionTitle p{font-size:11px}.catalog{gap:9px}.listing{border-radius:13px}.listing .visual{height:120px}.listing .visual img{height:115px;width:75%}.promoBadge{padding:4px 7px;font-size:13px}.likeButton{width:26px;height:26px;right:6px;top:6px;font-size:18px}.cardBody{padding:11px 9px 12px}.cardHeadline{font-size:19px}.cardType{font-size:9px;padding:3px 7px}.cardDesc{font-size:10px;min-height:77px;line-height:1.45}.cardFooter button{font-size:11px;padding:9px 4px}.cardInfo{font-size:9px}.promotionGrid .listing{grid-template-columns:112px minmax(0,1fr);min-height:205px}.promotionGrid .listing .visual{min-height:205px}.promotionGrid .listing .artFallback{height:100px;width:91px;font-size:60px;border-width:4px}.promotionGrid .listing .cardBody{padding:13px 12px}.promotionGrid .listing .cardHeadline{font-size:21px}.promotionGrid .listing .cardType{font-size:11px}.promotionGrid .listing .cardDesc{font-size:11px}.modal .panel{padding:24px 18px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+.listingPrice{margin:0 0 12px;color:#d39aff;font-size:clamp(19px,2vw,25px);font-weight:850;line-height:1.3;letter-spacing:-.02em}
+.mysteryMark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:66px;height:80px;border-radius:20px;background:#230e48d9;border:2px solid #d09aff;color:#fff;font-size:64px;font-weight:900;line-height:1;text-shadow:0 3px 8px #0008;box-shadow:0 0 25px #a749ff66;pointer-events:none}
+.promotionGrid .listing .visual img{width:90%;height:auto;max-height:230px}
+@media(max-width:570px){.listingPrice{font-size:19px;margin-bottom:10px}.mysteryMark{width:48px;height:62px;font-size:48px}}
 </style></head><body>
 <header class="topbar"><div class="topinner">
 <a class="brand" href="./"><span class="brandicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.2 12H5.2L4 7Z"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><path d="m9 14 3 3 3-3"/></svg></span><span>IG Buy <em>Now</em></span></a>
@@ -140,6 +144,7 @@ function makeCard(a){
   image.onerror=()=>{image.remove();visual.append(txt('div','🏰','artFallback'))};visual.append(image);
  }else if(random){visual.append(txt('div','?','artFallback'))}
  else visual.append(txt('div','🏰','artFallback'));
+ if(random){const mark=txt('span','?','mysteryMark');mark.setAttribute('aria-label','HDV surprise');visual.append(mark)}
  const fav=txt('button','♡','likeButton favoriteIcon');fav.type='button';fav.dataset.listingId=a.id;fav.title='Ajouter aux favoris';fav.setAttribute('aria-label','Ajouter aux favoris');fav.setAttribute('aria-pressed','false');fav.onclick=()=>window.igbnLike?.(a.id,fav);visual.append(fav);
  const body=txt('div',undefined,'cardBody');
  const title=txt('h3',undefined,'cardHeadline');
@@ -147,8 +152,9 @@ function makeCard(a){
  const type=txt('span',random?'Offre aléatoire':a.supply_mode==='on_request'?'Compte sur demande':'Compte en stock','cardType');
  const desc=txt('p',a.description||'','cardDesc');
  const footer=txt('div',undefined,'cardFooter');
+ footer.append(txt('p',priceLabel(a),'listingPrice'));
  const button=txt('button',random?'Demander ce compte':'▣ Faire une demande');button.type='button';button.onclick=()=>window.igbnRequest?.(a.id);footer.append(button);
- const extra=txt('div',undefined,'cardInfo');const detail=txt('button','Voir les détails');detail.type='button';detail.style.cssText='background:transparent;color:#bda1dc;border:0;padding:2px;font-size:10px';detail.onclick=()=>showDetails(a);extra.append(txt('span',priceLabel(a)),detail);
+ const extra=txt('div',undefined,'cardInfo');const detail=txt('button','Voir les détails');detail.type='button';detail.style.cssText='background:transparent;color:#bda1dc;border:0;padding:2px;font-size:10px';detail.onclick=()=>showDetails(a);extra.append(detail);
  body.append(title,type,desc,footer,extra);card.append(visual,body);return card;
 }
 function render(){
